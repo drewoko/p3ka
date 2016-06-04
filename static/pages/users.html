@@ -1,0 +1,21 @@
+<table id="top_chart">
+    <thead>
+    <tr>
+        <td>#</td>
+        <td>Username</td>
+        <td>Score</td>
+    </tr>
+    </thead>
+    <tbody>
+
+    <tr ng-repeat="(key, user) in users" ng-class="{'korona': key==0}">
+        <td>{{key+1}}</td>
+        <td>
+            <img src="/img/crown.png" ng-show="key==0">
+            <a ng-href="/#/user/{{user.name}}/">{{user.name}}</a>
+        </td>
+        <td>{{user.cnt}}</td>
+    </tr>
+
+    </tbody>
+</table>
