@@ -123,7 +123,7 @@ func (self *DataBase) get_last_user(limit int, start int, user string) []sqlite3
 	var rows []sqlite3.RowMap
 
 	for s, err := self.db.Query(
-		"SELECT name, origurl as url FROM messages where deleted=0 and name=? order by id desc limit ?,?", user, start, limit); err == nil; err = s.Next() {
+		"SELECT name, origurl as url, mature FROM messages where deleted=0 and name=? order by id desc limit ?,?", user, start, limit); err == nil; err = s.Next() {
 		row := make(sqlite3.RowMap)
 
 		s.Scan(row)

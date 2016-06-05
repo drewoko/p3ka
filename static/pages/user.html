@@ -1,6 +1,6 @@
 <div>
     <article ng-repeat="(key, image) in images" id="mainContent">
-        <img ng-src="{{image.url}}" alt="{{image.name}}" ng-click="showFull(image.url, images[key+1].url)" />
+        <img ng-src="{{image.mature == 1 ? '/img/restricted.png' : image.url}}" alt="{{image.name}}" ng-click="showFull(image.url, images[key+1].url)" />
         <cite>{{image.name}}</cite>
     </article>
 </div>

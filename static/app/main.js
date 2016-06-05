@@ -30,6 +30,21 @@ pekaApp.controller('userController', function($scope, $http, $routeParams) {
       lastScrollHeigth = document.body.scrollHeight;
     }
   });
+  $scope.showFull = function(self, next) {
+    $('#hoverer img').attr({
+      'src': self,
+      'data-next': next
+    });
+    $('#hoverer').show();
+  };
+
+  $('#hoverer').on('click', function(e) {
+    if(e.toElement.localName == "img") {
+      $('#hover-img').attr('src', getNextImage($('#hover-img').attr('src'), $scope.images));
+    } else {
+      $('#hoverer').hide();
+    }
+  });
 
   $scope.nextPage = function () {
 
@@ -70,6 +85,15 @@ pekaApp.controller('randController', function($scope, $http) {
     });
     $('#hoverer').show();
   };
+
+  $('#hoverer').on('click', function(e) {
+    if(e.toElement.localName == "img") {
+      $('#hover-img').attr('src', getNextImage($('#hover-img').attr('src'), $scope.images));
+    } else {
+      $('#hoverer').hide();
+    }
+  });
+
 });
 
 pekaApp.controller('mainController', function($scope, $http) {
