@@ -33,7 +33,7 @@ func (self *DataBase) create_table() {
 
 func (self *DataBase) is_exists(author string, url string) bool {
 
-	for s, err := self.db.Query("SELECT * FROM messages WHERE name=? AND (origurl=? OR awsurl=?)", author, url, url); err == nil; err = s.Next() {
+	for s, err := self.db.Query("SELECT * FROM messages WHERE origurl=?", url); err == nil; err = s.Next() {
 		return true
 	}
 
