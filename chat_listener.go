@@ -46,11 +46,11 @@ func init_ws(messages_channel chan Msg, messages_delete_channel chan Msg) {
 	})
 
 	ws_client.On("/chat/message", func(h *gosocketio.Channel, args Message) {
-		messages_channel <- Msg{Id: args.Id, Text:args.Text, Name:args.From.Name}
+		messages_channel <- Msg{Id: args.Id, Text:args.Text, Name:args.From.Name, Channel:args.Channel}
 	})
 
 	ws_client.On("/chat/message/remove", func(h *gosocketio.Channel, args Message) {
-		messages_delete_channel <- Msg{Id: args.Id, Text:args.Text, Name:args.From.Name}
+		messages_delete_channel <- Msg{Id: args.Id}
 	})
 }
 

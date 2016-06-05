@@ -3,6 +3,8 @@ package main
 import (
 	"time"
 	"strconv"
+	"strings"
+	"encoding/json"
 
 	"github.com/mvdan/xurls"
 	"github.com/parnurzeal/gorequest"
@@ -30,29 +32,51 @@ func delete_message(message Msg, db *DataBase) {
 }
 
 func process_message(message Msg, db *DataBase)  {
-	links := xurls.Strict.FindAllString(message.Text, -1)
 
 	request := gorequest.New().Timeout(time.Second*4)
 
-	for _, link := range links {
-		if (!db.is_exists(message.Name, link)) {
-			resp, _, errs :=  request.Head(link).End();
-			if(len(errs) == 0) {
-				if(resp.StatusCode == 200) {
-					log.Info("Processing file: ", link, resp)
-					if contentType, ok := resp.Header["Content-Type"]; ok {
-						if contentLength, ok := resp.Header["Content-Length"]; ok {
-							if(len(errs) == 0 && is_file_allowed(contentType[0], contentLength[0])) {
-								db.add_row(message.Id, message.Name, link);
+	if(is_channel_public(message.Channel, request)) {
+
+		links := xurls.Strict.FindAllString(message.Text, -1)
+		for _, link := range links {
+			if (!db.is_exists(message.Name, link)) {
+				resp, _, errs :=  request.Head(link).End();
+				if(len(errs) == 0) {
+					if(resp.StatusCode == 200) {
+						log.Info("Processing file: ", link, resp)
+						if contentType, ok := resp.Header["Content-Type"]; ok {
+							if contentLength, ok := resp.Header["Content-Length"]; ok {
+								if(len(errs) == 0 && is_file_allowed(contentType[0], contentLength[0])) {
+									db.add_row(message.Id, message.Name, link);
+								}
 							}
 						}
 					}
+				} else {
+					log.Info("Feiled to process image. Reason: ", errs[0])
 				}
-			} else {
-				log.Info("Feiled to process image. Reason: ", errs[0])
 			}
 		}
 	}
+}
+
+func is_channel_public(channel string, request *gorequest.SuperAgent) bool {
+	if(strings.Contains(channel, "room/")) {
+		var room RoomResponse
+
+		resp, body, errs := request.Post("http://funstream.tv/api/room").
+			Send(`{"roomId":`+strings.Replace(channel, "room/", "", -1)+`}`).
+			End()
+
+		if(len(errs) == 0 && resp.StatusCode == 200) {
+			err_un := json.Unmarshal([]byte(body), &room)
+			if(err_un == nil) {
+				return room.Mode == "public"
+			}
+		}
+	}
+
+	return true;
 }
 
 func is_file_allowed(content_type string, content_length string) bool {
@@ -65,4 +89,8 @@ func is_file_allowed(content_type string, content_length string) bool {
 
 	return (i64 < 5000000 && i64 > 100 &&
 		(content_type == "image/jpeg" || content_type == "image/png" || content_type == "image/gif"))
+}
+
+type RoomResponse struct  {
+	Mode string `json:"mode"`
 }

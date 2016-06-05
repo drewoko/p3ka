@@ -36,7 +36,7 @@ func main() {
 	db := new(DataBase).init(config.Database);
 	defer db.db.Close()
 
-	wg.Add(2)
+	wg.Add(3)
 
 	go init_listener(messages_channel, messages_delete_channel)
 	go message_processor(messages_channel, messages_delete_channel, db, config)
@@ -58,6 +58,7 @@ type Msg struct {
 	Id int64
 	Name string
 	Text string
+	Channel string
 }
 
 type Config struct {
