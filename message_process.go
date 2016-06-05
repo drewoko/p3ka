@@ -47,7 +47,8 @@ func process_message(message Msg, db *DataBase)  {
 						if contentType, ok := resp.Header["Content-Type"]; ok {
 							if contentLength, ok := resp.Header["Content-Length"]; ok {
 								if(len(errs) == 0 && is_file_allowed(contentType[0], contentLength[0])) {
-									db.add_row(message.Id, message.Name, link);
+
+									db.add_row(message.Id, message.Name, link, is_mature(message.Text));
 								}
 							}
 						}
@@ -58,6 +59,12 @@ func process_message(message Msg, db *DataBase)  {
 			}
 		}
 	}
+}
+
+func is_mature(text string) bool {
+	//sorry for that
+	text = strings.ToLower(text)
+	return strings.Contains(text, "+18") || strings.Contains(text, "18+") || strings.Contains(text, "+21")  || strings.Contains(text, "21+") || strings.Contains(text, "[spoiler")
 }
 
 func is_channel_public(channel string, request *gorequest.SuperAgent) bool {

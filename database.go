@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/mxk/go-sqlite/sqlite3"
+	"fmt"
 )
 
 type DataBase struct {
@@ -28,6 +29,8 @@ func (self *DataBase) init(path string) *DataBase {
 func (self *DataBase) create_table() {
 
 	self.db.Exec("CREATE TABLE messages (id integer not null primary key, date int, messageid int, name text, origurl text, deleted int DEFAULT 0)")
+	err := self.db.Exec("ALTER TABLE messages ADD COLUMN mature int DEFAULT 0;")
+	fmt.Println(err)
 
 }
 
@@ -40,13 +43,12 @@ func (self *DataBase) is_exists(author string, url string) bool {
 	return false
 }
 
-func (self *DataBase) add_row(messageid int64, author string, url string) {
+func (self *DataBase) add_row(messageid int64, author string, url string, mature bool) {
 
 	self.db.Begin()
-
 	err := self.db.Exec(
-		"INSERT INTO messages (messageid, date, name, origurl) VALUES (?, ?, ?, ?)",
-			int(messageid), int(time.Now().Unix()), author, url)
+		"INSERT INTO messages (messageid, date, name, origurl, mature) VALUES (?, ?, ?, ?, ?)",
+			int(messageid), int(time.Now().Unix()), author, url, mature)
 
 	self.db.Commit()
 
@@ -104,7 +106,7 @@ func (self *DataBase) get_last(limit int, start int) []sqlite3.RowMap {
 	var rows []sqlite3.RowMap
 
 	for s, err := self.db.Query(
-		"SELECT name, origurl as url FROM messages where deleted=0 order by id desc limit ?,?", start, limit); err == nil; err = s.Next() {
+		"SELECT name, origurl as url, mature FROM messages where deleted=0 order by id desc limit ?,?", start, limit); err == nil; err = s.Next() {
 		row := make(sqlite3.RowMap)
 
 		s.Scan(row)
@@ -137,7 +139,7 @@ func (self *DataBase) get_random(limit int) []sqlite3.RowMap {
 	var rows []sqlite3.RowMap
 
 	for s, err := self.db.Query(
-		"SELECT name, origurl as url FROM messages ORDER BY RANDOM() LIMIT ?", limit); err == nil; err = s.Next() {
+		"SELECT name, origurl as url, mature FROM messages ORDER BY RANDOM() LIMIT ?", limit); err == nil; err = s.Next() {
 		row := make(sqlite3.RowMap)
 
 		s.Scan(row)
@@ -163,5 +165,4 @@ func (self *DataBase) get_top_users(limit int) []sqlite3.RowMap {
 	}
 
 	return rows
-
 }
