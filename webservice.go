@@ -10,7 +10,7 @@ func web(db *DataBase, config *Config) {
 
 	ginInst := gin.Default()
 
-	ginInst.Use(static.Serve("/", static.LocalFile("./static", true)))
+	ginInst.Use(static.Serve("/", static.LocalFile(config.Static, true)))
 
 	ginInst.GET("/api/random", func(c *gin.Context) {
 		c.JSON(200, db.get_random(39))

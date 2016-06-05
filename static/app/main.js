@@ -90,6 +90,14 @@ pekaApp.controller('mainController', function($scope, $http) {
     }
   });
 
+  $('#hoverer').on('click', function(e) {
+    if(e.toElement.localName == "img") {
+      $('#hover-img').attr('src', getNextImage($('#hover-img').attr('src'), $scope.images));
+    } else {
+      $('#hoverer').hide();
+    }
+  });
+
   $scope.nextPage = function () {
 
     $http.get('/api/last?start='+($scope.currentStart)).then(function(response) {
@@ -137,8 +145,13 @@ pekaApp.config(function($routeProvider) {
     });
 });
 
-$(function() {
-  $('#hoverer').on('click', function(e) {
-      $('#hoverer').hide();
-  });
-});
+function getNextImage(currentSrc, all_images) {
+
+  for(var key in all_images) {
+
+    if(all_images[key].url == currentSrc) {
+      return all_images[parseInt(key)+1].url;
+    }
+  }
+  return currentSrc;
+}

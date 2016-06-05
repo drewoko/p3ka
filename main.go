@@ -27,6 +27,7 @@ func main() {
 	config := &Config {
 		Database: p.GetString("database", "p3ka.db"),
 		Port: p.GetString("port", "8080"),
+		Static: p.GetString("static", "./static"),
 	}
 
 	var wg sync.WaitGroup
@@ -64,4 +65,5 @@ type Msg struct {
 type Config struct {
 	Database string
 	Port string
+	Static string
 }
