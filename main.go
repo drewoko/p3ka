@@ -7,6 +7,7 @@ import (
 
 	"github.com/op/go-logging"
 	"github.com/magiconair/properties"
+	"strings"
 )
 
 var (
@@ -28,6 +29,7 @@ func main() {
 		Database: p.GetString("database", "p3ka.db"),
 		Port: p.GetString("port", "8080"),
 		Static: p.GetString("static", "./static"),
+		BannedUsers: strings.Split(p.GetString("banned-users", ""), ","),
 	}
 
 	var wg sync.WaitGroup
@@ -66,4 +68,5 @@ type Config struct {
 	Database string
 	Port string
 	Static string
+	BannedUsers []string
 }

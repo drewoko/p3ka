@@ -18,7 +18,7 @@ func message_processor(messages_channel chan Msg, messages_delete_channel chan M
 
 		select {
 			case message = <-messages_channel:
-				go process_message(message, db)
+				go process_message(message, db, config)
 			case deleted_message = <-messages_delete_channel:
 				go delete_message(deleted_message, db)
 		}
@@ -31,13 +31,18 @@ func delete_message(message Msg, db *DataBase) {
 	db.set_deleted((msg["id"]));
 }
 
-func process_message(message Msg, db *DataBase)  {
+func process_message(message Msg, db *DataBase, config *Config)  {
 
 	request := gorequest.New().Timeout(time.Second*4)
 
-	if(is_channel_public(message.Channel, request)) {
+	if(is_channel_public(message.Channel, request) && !contains_string(config.BannedUsers, message.Name)) {
 
 		links := xurls.Strict.FindAllString(message.Text, -1)
+
+		if(len(links) != 0) {
+			log.Info("Received message: ", message)
+		}
+
 		for _, link := range links {
 			if (!db.is_exists(message.Name, link)) {
 				resp, _, errs :=  request.Head(link).End();
@@ -100,4 +105,13 @@ func is_file_allowed(content_type string, content_length string) bool {
 
 type RoomResponse struct  {
 	Mode string `json:"mode"`
+}
+
+func contains_string(s []string, e string) bool {
+	for _, a := range s {
+		if strings.ToLower(a) == strings.ToLower(e) {
+			return true
+		}
+	}
+	return false
 }
