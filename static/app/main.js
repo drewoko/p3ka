@@ -39,7 +39,7 @@ pekaApp.controller('userController', function($scope, $http, $routeParams) {
   };
 
   $('#hoverer').on('click', function(e) {
-    if(e.toElement.localName == "img") {
+    if(e.target.localName == "img") {
       $('#hover-img').attr('src', getNextImage($('#hover-img').attr('src'), $scope.images));
     } else {
       $('#hoverer').hide();
@@ -87,7 +87,7 @@ pekaApp.controller('randController', function($scope, $http) {
   };
 
   $('#hoverer').on('click', function(e) {
-    if(e.toElement.localName == "img") {
+    if(e.target.localName == "img") {
       $('#hover-img').attr('src', getNextImage($('#hover-img').attr('src'), $scope.images));
     } else {
       $('#hoverer').hide();
@@ -115,7 +115,7 @@ pekaApp.controller('mainController', function($scope, $http) {
   });
 
   $('#hoverer').on('click', function(e) {
-    if(e.toElement.localName == "img") {
+    if(e.target.localName == "img") {
       $('#hover-img').attr('src', getNextImage($('#hover-img').attr('src'), $scope.images));
     } else {
       $('#hoverer').hide();

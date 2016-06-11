@@ -17,7 +17,7 @@ func web(db *DataBase, config *Config) {
 	})
 
 	ginInst.GET("/api/top", func(c *gin.Context) {
-		c.JSON(200, db.get_top_users(200))
+		c.JSON(200, db.get_top_users(200, config.ExcludedUsers))
 	})
 
 	ginInst.GET("/api/last", func(c *gin.Context) {
@@ -32,7 +32,6 @@ func web(db *DataBase, config *Config) {
 			c.JSON(200, db.get_last(37, i))
 		}
 	})
-
 
 	ginInst.GET("/api/user", func(c *gin.Context) {
 

@@ -30,8 +30,8 @@ func (self *DataBase) create_table() {
 
 	self.db.Exec("CREATE TABLE messages (id integer not null primary key, date int, messageid int, name text, origurl text, deleted int DEFAULT 0)")
 	err := self.db.Exec("ALTER TABLE messages ADD COLUMN mature int DEFAULT 0;")
-	fmt.Println(err)
 
+	log.Info("", err)
 }
 
 func (self *DataBase) is_exists(author string, url string) bool {
@@ -60,7 +60,7 @@ func (self *DataBase) add_row(messageid int64, author string, url string, mature
 func (self *DataBase) get_message_by_id(id int64) sqlite3.RowMap {
 
 	row := make(sqlite3.RowMap)
-	for s, err := self.db.Query("SELECT * FROM messages where id=?", int(id)); err == nil; err = s.Next() {
+	for s, err := self.db.Query("SELECT * FROM messages where deleted = 0 and id=?", int(id)); err == nil; err = s.Next() {
 		s.Scan(row)
 	}
 
@@ -70,7 +70,7 @@ func (self *DataBase) get_message_by_id(id int64) sqlite3.RowMap {
 func (self *DataBase) get_message_by_messageid(id int64) sqlite3.RowMap {
 
 	row := make(sqlite3.RowMap)
-	for s, err := self.db.Query("SELECT * FROM messages where messageid=?", int(id)); err == nil; err = s.Next() {
+	for s, err := self.db.Query("SELECT * FROM messages where deleted = 0 and messageid=?", int(id)); err == nil; err = s.Next() {
 		s.Scan(row)
 	}
 
@@ -122,6 +122,10 @@ func (self *DataBase) get_last_user(limit int, start int, user string) []sqlite3
 
 	var rows []sqlite3.RowMap
 
+	fmt.Println(limit)
+	fmt.Println(start)
+	fmt.Println(user)
+
 	for s, err := self.db.Query(
 		"SELECT name, origurl as url, mature FROM messages where deleted=0 and name=? order by id desc limit ?,?", user, start, limit); err == nil; err = s.Next() {
 		row := make(sqlite3.RowMap)
@@ -139,7 +143,7 @@ func (self *DataBase) get_random(limit int) []sqlite3.RowMap {
 	var rows []sqlite3.RowMap
 
 	for s, err := self.db.Query(
-		"SELECT name, origurl as url, mature FROM messages ORDER BY RANDOM() LIMIT ?", limit); err == nil; err = s.Next() {
+		"SELECT name, origurl as url, mature FROM messages WHERE deleted = 0 ORDER BY RANDOM() LIMIT ?", limit); err == nil; err = s.Next() {
 		row := make(sqlite3.RowMap)
 
 		s.Scan(row)
@@ -150,18 +154,18 @@ func (self *DataBase) get_random(limit int) []sqlite3.RowMap {
 	return rows
 }
 
-
-func (self *DataBase) get_top_users(limit int) []sqlite3.RowMap {
+func (self *DataBase) get_top_users(limit int, exclude []string) []sqlite3.RowMap {
 
 	var rows []sqlite3.RowMap
 
 	for s, err := self.db.Query(
-		"select count(*) as cnt, name from messages group by name order by cnt desc LIMIT ?", limit); err == nil; err = s.Next() {
+		"select count(*) as cnt, name from messages where deleted = 0 group by name order by cnt desc LIMIT ?", limit); err == nil; err = s.Next() {
 		row := make(sqlite3.RowMap)
-
 		s.Scan(row)
 
-		rows = append(rows, row)
+		if(!contains_string(exclude, row["name"].(string))) {
+			rows = append(rows, row)
+		}
 	}
 
 	return rows

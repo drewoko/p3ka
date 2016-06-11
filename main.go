@@ -30,6 +30,7 @@ func main() {
 		Port: p.GetString("port", "8080"),
 		Static: p.GetString("static", "./static"),
 		BannedUsers: strings.Split(p.GetString("banned-users", ""), ","),
+		ExcludedUsers: strings.Split(p.GetString("exclude-from-rationg", ""), ","),
 	}
 
 	var wg sync.WaitGroup
@@ -69,4 +70,5 @@ type Config struct {
 	Port string
 	Static string
 	BannedUsers []string
+	ExcludedUsers []string
 }
