@@ -11,13 +11,14 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular-route.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/ngInfiniteScroll/1.2.2/ng-infinite-scroll.min.js"></script>
 
     <script src='/app/main.js'></script>
 </head>
 <body>
 
     <header id="header">
-        <a href="http://p3ka.xyz/#/">
+        <a href="http://p3ka.xyz/#/" target="_self">
             <img src="/img/peka150.png" title="we <3 sc2tv" alt="p3ka">
         </a>
     </header>
@@ -25,16 +26,16 @@
     <nav id="nav">
         <ul>
             <li>
-                <a href="/#/" title="Свежее">Свежее</a>
+                <a href="/#/" title="Свежее" target="_self">Свежее</a>
             </li>
             <li>
-                <a href="/#/users" title="Рейтинг пользователей">ПекаКинг!</a>
+                <a href="/#/users" title="Рейтинг пользователей" target="_self">ПекаКинг!</a>
             </li>
             <li>
-                <a href="/#/random" title="Случайные картинки">Рэндом</a>
+                <a href="/#/random" title="Случайные картинки" target="_self">Рэндом</a>
             </li>
             <li>
-                <a href="/#/about" title="О сайте">Шо?</a>
+                <a href="/#/about" title="О сайте" target="_self">Шо?</a>
             </li>
         </ul>
     </nav>
@@ -55,7 +56,6 @@
 
         ga('create', 'UA-78778352-1', 'auto');
         ga('send', 'pageview');
-
     </script>
 </body>
 </html>

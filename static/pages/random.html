@@ -1,8 +1,7 @@
-<div>
+<div class="images" infinite-scroll="nextPage()" infinite-scroll-distance="2" infinite-scroll-disabled="scrollBusy">
     <article ng-repeat="(key, image) in images" id="mainContent">
         <img ng-src="{{image.mature == 1 ? '/img/restricted.png' : image.url}}" alt="{{image.name}}" ng-click="showFull(image.url, images[key+1].url)" />
         <cite>{{image.name}}</cite>
     </article>
-
-    <a href="/#/random/" id="show_more">Ещё</a>
+    <a href="/#/random/" id="show_more" target="_self">Ещё</a>
 </div>

@@ -40,7 +40,7 @@ func main() {
 	db := new(DataBase).init(config.Database);
 	defer db.db.Close()
 
-	wg.Add(3)
+	wg.Add(4)
 
 	go init_listener(messages_channel, messages_delete_channel)
 	go message_processor(messages_channel, messages_delete_channel, db, config)

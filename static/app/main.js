@@ -1,11 +1,9 @@
-var pekaApp = angular.module('pekaApp', ['ngRoute']);
+var pekaApp = angular.module('pekaApp', ['ngRoute', 'infinite-scroll']);
 
 pekaApp.controller('aboutController', function($scope, $http) {
-
 });
 
 pekaApp.controller('usersController', function($scope, $http) {
-
   $http.get('/api/top').then(function(response) {
     if(response.data != null) {
       $scope.users = response.data;
@@ -17,24 +15,10 @@ pekaApp.controller('userController', function($scope, $http, $routeParams) {
 
   $scope.currentStart = 0;
   $scope.images = [];
+  $scope.scrollBusy = false;
 
-  var lastScrollHeigth = document.body.scrollHeight;
-
-  $(window).scroll(function() {
-
-    var totalScroll = document.body.scrollHeight-$(window).height();
-    var scrollTop = $(window).scrollTop();
-
-    if(totalScroll/2 < scrollTop && lastScrollHeigth < document.body.scrollHeight) {
-      $scope.nextPage();
-      lastScrollHeigth = document.body.scrollHeight;
-    }
-  });
-  $scope.showFull = function(self, next) {
-    $('#hoverer img').attr({
-      'src': self,
-      'data-next': next
-    });
+  $scope.showFull = function(self) {
+    $('#hoverer img').attr('src', self);
     $('#hoverer').show();
   };
 
@@ -47,6 +31,9 @@ pekaApp.controller('userController', function($scope, $http, $routeParams) {
   });
 
   $scope.nextPage = function () {
+    if (this.scrollBusy) return;
+
+    this.scrollBusy = true;
 
     $http.get('/api/user?start='+($scope.currentStart)+'&user='+$routeParams.user).then(function(response) {
       if(response.data != null) {
@@ -54,21 +41,18 @@ pekaApp.controller('userController', function($scope, $http, $routeParams) {
         angular.forEach(response.data, function(val) {
           $scope.images.push(val);
         });
+        this.scrollBusy = false;
       }
     });
   };
 
-  $scope.showFull = function(self, next) {
-    $('#hoverer img').attr({
-      'src': self,
-      'data-next': next
-    });
+  $scope.showFull = function(self) {
+    $('#hoverer img').attr('src', self);
     $('#hoverer').show();
   };
 
   $scope.nextPage();
 });
-
 
 pekaApp.controller('randController', function($scope, $http) {
 
@@ -78,11 +62,8 @@ pekaApp.controller('randController', function($scope, $http) {
     }
   });
 
-  $scope.showFull = function(self, next) {
-    $('#hoverer img').attr({
-      'src': self,
-      'data-next': next
-    });
+  $scope.showFull = function(self) {
+    $('#hoverer img').attr('src', self);
     $('#hoverer').show();
   };
 
@@ -93,26 +74,13 @@ pekaApp.controller('randController', function($scope, $http) {
       $('#hoverer').hide();
     }
   });
-
 });
 
 pekaApp.controller('mainController', function($scope, $http) {
 
   $scope.currentStart = 0;
   $scope.images = [];
-
-  var lastScrollHeigth = document.body.scrollHeight;
-
-  $(window).scroll(function() {
-
-    var totalScroll = document.body.scrollHeight-$(window).height();
-    var scrollTop = $(window).scrollTop();
-
-    if(totalScroll/2 < scrollTop && lastScrollHeigth < document.body.scrollHeight) {
-      $scope.nextPage();
-      lastScrollHeigth = document.body.scrollHeight;
-    }
-  });
+  $scope.scrollBusy = false;
 
   $('#hoverer').on('click', function(e) {
     if(e.target.localName == "img") {
@@ -123,6 +91,9 @@ pekaApp.controller('mainController', function($scope, $http) {
   });
 
   $scope.nextPage = function () {
+    if (this.scrollBusy) return;
+
+    this.scrollBusy = true;
 
     $http.get('/api/last?start='+($scope.currentStart)).then(function(response) {
       if(response.data != null) {
@@ -130,15 +101,13 @@ pekaApp.controller('mainController', function($scope, $http) {
         angular.forEach(response.data, function(val) {
           $scope.images.push(val);
         });
+        $scope.scrollBusy = false;
       }
     });
   };
 
-  $scope.showFull = function(self, next) {
-    $('#hoverer img').attr({
-      'src': self,
-      'data-next': next
-    });
+  $scope.showFull = function(self) {
+    $('#hoverer img').attr('src', self);
     $('#hoverer').show();
   };
 

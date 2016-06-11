@@ -41,8 +41,8 @@ func init_ws(messages_channel chan Msg, messages_delete_channel chan Msg) {
 	})
 
 	ws_client.On(gosocketio.OnDisconnection, func(h *gosocketio.Channel) {
-		log.Info("Funstream.tv WS disconnected")
 		ws_client.Close()
+		log.Fatal("Funstream.tv WS disconnected")
 	})
 
 	ws_client.On("/chat/message", func(h *gosocketio.Channel, args Message) {
