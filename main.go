@@ -45,6 +45,7 @@ func main() {
 	go init_listener(messages_channel, messages_delete_channel)
 	go message_processor(messages_channel, messages_delete_channel, db, config)
 	go web(db, config)
+	go image_checker(db, config)
 
 	wg.Wait()
 }

@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/mxk/go-sqlite/sqlite3"
-	"fmt"
 )
 
 type DataBase struct {
@@ -101,6 +100,20 @@ func (self *DataBase) get_all_outdated() []sqlite3.RowMap {
 	return rows
 }
 
+
+func (self *DataBase) get_all() []sqlite3.RowMap {
+
+	var rows []sqlite3.RowMap
+
+	for s, err := self.db.Query("SELECT * FROM messages where deleted=0"); err == nil; err = s.Next() {
+		row := make(sqlite3.RowMap)
+		s.Scan(row)
+		rows = append(rows, row)
+	}
+
+	return rows
+}
+
 func (self *DataBase) get_last(limit int, start int) []sqlite3.RowMap {
 
 	var rows []sqlite3.RowMap
@@ -122,9 +135,7 @@ func (self *DataBase) get_last_user(limit int, start int, user string) []sqlite3
 
 	var rows []sqlite3.RowMap
 
-	fmt.Println(limit)
-	fmt.Println(start)
-	fmt.Println(user)
+	log.Info("GetAllUsers req. limit: %s, start: %s, user: %s", limit, start, user)
 
 	for s, err := self.db.Query(
 		"SELECT name, origurl as url, mature FROM messages where deleted=0 and name=? order by id desc limit ?,?", user, start, limit); err == nil; err = s.Next() {
