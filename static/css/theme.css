@@ -172,3 +172,12 @@ tr.korona {
 .images {
     position: absolute
 }
+
+.adult-content {
+    background: url("/img/restricted.png");
+    background-size: contain;
+}
+
+.mainContent {
+    cursor: pointer;
+}
