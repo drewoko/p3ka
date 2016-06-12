@@ -1,4 +1,4 @@
-var pekaApp = angular.module('pekaApp', ['ngRoute', 'infinite-scroll']);
+var pekaApp = angular.module('pekaApp', ['ngRoute', 'infinite-scroll', 'ngLocationUpdate']);
 
 pekaApp.controller('aboutController', function($scope, $http) {
 });
@@ -11,7 +11,7 @@ pekaApp.controller('usersController', function($scope, $http) {
   });
 });
 
-pekaApp.controller('userController', function($scope, $http, $routeParams) {
+pekaApp.controller('userController', function($scope, $rootScope, $http, $routeParams) {
 
   $scope.currentStart = 0;
   $scope.images = [];
@@ -32,23 +32,14 @@ pekaApp.controller('userController', function($scope, $http, $routeParams) {
     });
   };
 
-  $scope.showFull = function(self) {
-    $('#hoverer img').attr('src', self);
-    $('#hoverer').show();
+  $scope.showFull = function (image, playlist) {
+    $rootScope.LightBox.show(image.url, playlist);
   };
-
-  $('#hoverer').on('click', function(e) {
-    if(e.target.localName == "img") {
-      $('#hover-img').attr('src', getNextImage($('#hover-img').attr('src'), $scope.images));
-    } else {
-      $('#hoverer').hide();
-    }
-  });
 
   $scope.nextPage();
 });
 
-pekaApp.controller('randController', function($scope, $http) {
+pekaApp.controller('randController', function($scope, $rootScope, $http) {
 
   $http.get('/api/random').then(function(response) {
     if(response.data != null) {
@@ -56,33 +47,24 @@ pekaApp.controller('randController', function($scope, $http) {
     }
   });
 
-  $scope.showFull = function(self) {
-    $('#hoverer img').attr('src', self);
-    $('#hoverer').show();
+  $scope.showFull = function (image, playlist) {
+    $rootScope.LightBox.show(image.url, playlist);
   };
-
-  $('#hoverer').on('click', function(e) {
-    if(e.target.localName == "img") {
-      $('#hover-img').attr('src', getNextImage($('#hover-img').attr('src'), $scope.images));
-    } else {
-      $('#hoverer').hide();
-    }
-  });
 });
 
-pekaApp.controller('mainController', function($scope, $http) {
+pekaApp.controller('mainController', function($scope, $rootScope, $http, $routeParams) {
+
+  if($routeParams.image != undefined) {
+    $rootScope.LightBox.show(atob($routeParams.image), []);
+  }
 
   $scope.currentStart = 0;
   $scope.images = [];
   $scope.scrollBusy = false;
 
-  $('#hoverer').on('click', function(e) {
-    if(e.target.localName == "img") {
-      $('#hover-img').attr('src', getNextImage($('#hover-img').attr('src'), $scope.images));
-    } else {
-      $('#hoverer').hide();
-    }
-  });
+  $scope.showFull = function (image, playlist) {
+    $rootScope.LightBox.show(image.url, playlist);
+  };
 
   $scope.nextPage = function () {
     if (this.scrollBusy) return;
@@ -100,17 +82,59 @@ pekaApp.controller('mainController', function($scope, $http) {
     });
   };
 
-  $scope.showFull = function(self) {
-    $('#hoverer img').attr('src', self);
-    $('#hoverer').show();
+  $scope.nextPage();
+});
+
+pekaApp.controller('LightBox', function($rootScope, $scope, $window, $location) {
+
+  this.url = "";
+  this.show = false;
+
+  var origUrl;
+  var imagePlayList = [];
+
+  $rootScope.LightBox = {};
+  $rootScope.LightBox.show = function(url, playlist) {
+
+    origUrl = getOrigUrl();
+
+    $scope.url = url;
+    $scope.show = true;
+    $location.update_path("/show/"+btoa(url), false);
+    imagePlayList = playlist;
   };
 
-  $scope.nextPage();
+  $scope.closeClick = function($event) {
+    if($event.target.localName != "img") {
+      close();
+      $location.update_path(origUrl, false);
+    }
+  };
+
+  $scope.next = function () {
+    this.url = getNextImage($scope.url, imagePlayList);
+    $location.update_path("/show/"+btoa(this.url), false);
+  };
+
+  function close() {
+    $scope.url = "";
+    $scope.show = false;
+    imagePlayList = [];
+  }
+
+  function getOrigUrl() {
+    var origUrl = $window.location.hash;
+    return origUrl.indexOf("/show") > -1 ? "/" : origUrl.replace('#/', '');
+  }
 });
 
 pekaApp.config(function($routeProvider) {
   $routeProvider
     .when('/', {
+      templateUrl : 'pages/main.html',
+      controller  : 'mainController'
+    })
+    .when('/show/:image', {
       templateUrl : 'pages/main.html',
       controller  : 'mainController'
     })
@@ -129,6 +153,9 @@ pekaApp.config(function($routeProvider) {
     .when('/about', {
       templateUrl : 'pages/about.html',
       controller  : 'aboutController'
+    })
+    .otherwise({
+      redirectTo: '/'
     });
 });
 
@@ -137,7 +164,10 @@ function getNextImage(currentSrc, all_images) {
   for(var key in all_images) {
 
     if(all_images[key].url == currentSrc) {
-      return all_images[parseInt(key)+1].url;
+      var k = parseInt(key)+1;
+      if(all_images[k] != undefined) {
+        return all_images[k].url;
+      }
     }
   }
   return currentSrc;

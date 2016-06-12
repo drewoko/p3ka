@@ -100,7 +100,6 @@ div#hoverer {
     top: 0;
     width: 100%;
     height: 100%;
-    display: none;
     text-align: center;
     background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3QwYDhc5YjEWtAAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAANSURBVAjXY2BgYFgEAACnAKO8ysjTAAAAAElFTkSuQmCC);
 }

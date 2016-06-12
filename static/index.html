@@ -8,10 +8,10 @@
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular-route.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/ngInfiniteScroll/1.2.2/ng-infinite-scroll.min.js"></script>
+    <script src="//anglibs.github.io/angular-location-update/angular-location-update.min.js"></script>
 
     <script src='/app/main.js'></script>
 
@@ -49,8 +49,8 @@
 
     <section ng-view></section>
 
-    <div id="hoverer" style="display: none;">
-        <img id="hover-img" alt="Loaded image">
+    <div id="hoverer" ng-controller="LightBox" ng-show="show" ng-click="closeClick($event)" ng-keyup="test()">
+        <img id="hover-img" ng-src="{{url}}" alt="Loaded image" ng-click="next()">
     </div>
 
     <script>
