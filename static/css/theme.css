@@ -169,7 +169,8 @@ tr.korona {
 }
 
 .images {
-    position: absolute
+    position: absolute;
+    width: 858px;
 }
 
 .adult-content {
