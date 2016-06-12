@@ -80,7 +80,7 @@ func (self *DataBase) get_all() []RowMap {
 
 func (self *DataBase) get_last(limit int, start int) []RowMap {
 
-	s, err := self.db.Query(DaDa
+	s, err := self.db.Query(
 		MESSAGE_MAIN_QUERY + " where deleted=0 order by id desc limit ?,?", start, limit)
 
 	if(err != nil) {
