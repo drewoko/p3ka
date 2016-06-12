@@ -15,6 +15,22 @@ pekaApp.controller('userController', function($scope, $http, $routeParams) {
 
   $scope.currentStart = 0;
   $scope.images = [];
+  $scope.scrollBusy = false;
+
+  $scope.nextPage = function () {
+    if($scope.scrollBusy) return;
+
+    $scope.scrollBusy = true;
+    $http.get('/api/user?start='+($scope.currentStart)+'&user='+$routeParams.user).then(function(response) {
+      if(response.data != null) {
+        $scope.currentStart += response.data.length;
+        angular.forEach(response.data, function(val) {
+          $scope.images.push(val);
+        });
+        $scope.scrollBusy = false;
+      }
+    });
+  };
 
   $scope.showFull = function(self) {
     $('#hoverer img').attr('src', self);
@@ -28,23 +44,6 @@ pekaApp.controller('userController', function($scope, $http, $routeParams) {
       $('#hoverer').hide();
     }
   });
-
-  $scope.nextPage = function () {
-
-    $http.get('/api/user?start='+($scope.currentStart)+'&user='+$routeParams.user).then(function(response) {
-      if(response.data != null) {
-        $scope.currentStart += response.data.length;
-        angular.forEach(response.data, function(val) {
-          $scope.images.push(val);
-        });
-      }
-    });
-  };
-
-  $scope.showFull = function(self) {
-    $('#hoverer img').attr('src', self);
-    $('#hoverer').show();
-  };
 
   $scope.nextPage();
 });
