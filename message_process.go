@@ -50,7 +50,7 @@ func process_message(message Msg, db *DataBase, config *Config)  {
 		}
 
 		for _, link := range links {
-			if (strings.Contains(link, "#noP3KA") && !db.is_exists(message.Name, link)) {
+			if (!strings.Contains(link, "#noP3KA") && !db.is_exists(message.Name, link)) {
 				resp, _, errs :=  request.Head(link).End();
 				if(len(errs) == 0) {
 					if(resp.StatusCode == 200) {
