@@ -12,6 +12,12 @@ import (
 
 func message_processor(messages_channel chan Msg, messages_delete_channel chan Msg, db *DataBase, config *Config) {
 
+	defer func() {
+		if r := recover(); r != nil {
+			log.Info("Recovering", r)
+		}
+	}()
+
 	for ;; {
 		var message Msg
 		var deleted_message Msg

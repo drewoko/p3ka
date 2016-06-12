@@ -8,6 +8,12 @@ import (
 
 func web(db *DataBase, config *Config) {
 
+	defer func() {
+		if r := recover(); r != nil {
+			log.Info("Recovering", r)
+		}
+	}()
+
 	ginInst := gin.Default()
 
 	ginInst.Use(static.Serve("/", static.LocalFile(config.Static, true)))

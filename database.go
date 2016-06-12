@@ -151,6 +151,8 @@ func (self *DataBase) multiple_message_scan(s *sql.Rows) []RowMap {
 		rows = append(rows, self.multiple_item_message_scan(s))
 	}
 
+	s.Close()
+
 	return rows
 }
 

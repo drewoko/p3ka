@@ -7,8 +7,7 @@ import (
 	"github.com/graarh/golang-socketio/transport"
 )
 
-func  init_listener(messages_channel chan Msg, messages_delete_channel chan Msg) {
-
+func init_listener(messages_channel chan Msg, messages_delete_channel chan Msg) {
 	init_ws(messages_channel, messages_delete_channel)
 }
 

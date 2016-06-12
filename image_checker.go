@@ -9,12 +9,17 @@ import (
 
 func image_checker(db *DataBase, config *Config) {
 
+	defer func() {
+		if r := recover(); r != nil {
+			log.Info("Recovering", r)
+		}
+	}()
+
 	c := cron.New()
 
 	c.AddFunc("@daily", func() {
 		check_images(db)
 	})
-
 }
 
 func check_images(db *DataBase) {
