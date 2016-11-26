@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/mvdan/xurls"
-	"github.com/parnurzeal/gorequest"
+	"gopkg.in/mvdan/xurls.v0"
+	"gopkg.in/parnurzeal/gorequest.v0"
 )
 
 func MessageProcessor(messagesInputChannel chan Msg, messagesDeleteChannel chan Msg, db *DataBase, config *Config) {

@@ -6,7 +6,7 @@ import (
 	"flag"
 	"strings"
 
-	"github.com/magiconair/properties"
+	"gopkg.in/magiconair/properties.v1"
 
 	Core "./core"
 	Chats "./chats"

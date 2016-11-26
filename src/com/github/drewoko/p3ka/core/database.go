@@ -5,7 +5,7 @@ import (
 	"time"
 	"database/sql"
 
-	_ "github.com/mattn/go-sqlite3"
+	_ "gopkg.in/mattn/go-sqlite3.v1"
 )
 
 const MESSAGE_MAIN_QUERY string = "SELECT id, name, origurl as url, mature FROM messages";

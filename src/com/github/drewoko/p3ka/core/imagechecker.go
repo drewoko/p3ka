@@ -4,7 +4,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/parnurzeal/gorequest"
+	"gopkg.in/parnurzeal/gorequest.v0"
 )
 
 func ImageChecker(db *DataBase) {
