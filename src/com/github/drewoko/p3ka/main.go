@@ -12,6 +12,11 @@ import (
 	Chats "./chats"
 )
 
+/**
+	Before running
+	go-bindata -o core/bindata.go -pkg core static/*
+ */
+
 func main() {
 
 	log.Println("Starting P3KA application")
@@ -24,11 +29,12 @@ func main() {
 	config := &Core.Config {
 		Database: propertyFile.GetString("database", "p3ka.db"),
 		Port: propertyFile.GetString("port", "8080"),
-		Static: propertyFile.GetString("static", "./static"),
+		Static: propertyFile.GetString("static", "/static"),
 		BannedUsers: strings.Split(propertyFile.GetString("banned-users", ""), ","),
 		ExcludedUsers: strings.Split(propertyFile.GetString("exclude-from-rationg", ""), ","),
 		Peka2TvHost: propertyFile.GetString("peka2tv-host", "chat.funstream.tv"),
 		Peka2TvPort: propertyFile.GetInt("peka2tv-port", 80),
+		Dev: propertyFile.GetBool("dev", false),
 	}
 
 	propertyFile.MustFlag(flag.CommandLine)

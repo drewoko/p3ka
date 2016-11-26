@@ -26,4 +26,5 @@ type Config struct {
 	ExcludedUsers []string
 	Peka2TvHost string
 	Peka2TvPort int
+	Dev bool
 }

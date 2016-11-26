@@ -18,7 +18,12 @@ func Web(db *DataBase, config *Config) {
 
 	ginInst := gin.Default()
 
-	ginInst.Use(static.Serve("/", static.LocalFile(config.Static, true)))
+	if config.Dev {
+		ginInst.Use(static.Serve("/", static.LocalFile(config.Static, true)))
+	} else {
+		ginInst.Use(static.Serve("/", BinaryFileSystem("static")))
+	}
+
 	ginInst.NoRoute(redirect)
 
 	api := ginInst.Group("/api")
