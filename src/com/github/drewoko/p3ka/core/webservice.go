@@ -1,16 +1,18 @@
-package main
+package core
 
 import (
+	"log"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/contrib/static"
-	"strconv"
 )
 
-func web(db *DataBase, config *Config) {
+func Web(db *DataBase, config *Config) {
 
 	defer func() {
 		if r := recover(); r != nil {
-			log.Info("Recovering", r)
+			log.Print("Recovering", r)
 		}
 	}()
 
@@ -38,7 +40,7 @@ func web(db *DataBase, config *Config) {
 			if(err != nil) {
 				c.JSON(400, gin.H{})
 			} else {
-				c.JSON(200, db.get_last(37, i))
+				c.JSON(200, db.GetLast(37, i))
 			}
 		})
 
