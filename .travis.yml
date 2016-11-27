@@ -4,5 +4,5 @@ go:
   - 1.7
   - master
 
-install: make get-deps && cd src/github/drewoko/p3ka && go build main.go
+install: cd src/github/drewoko/p3ka && go get ./... && go build main.go
 
