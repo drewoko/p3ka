@@ -10,10 +10,6 @@ import (
 	Core "../core"
 )
 
-func InitChats(messages_channel chan Core.Msg, messages_delete_channel chan Core.Msg, config *Core.Config) {
-	initPeka2Tv(messages_channel, messages_delete_channel, config)
-}
-
 func initPeka2Tv(messages_channel chan Core.Msg, messages_delete_channel chan Core.Msg, config *Core.Config) {
 
 	log.Println("Trying to connect to Funstream.tv WS")
@@ -56,11 +52,17 @@ func initPeka2Tv(messages_channel chan Core.Msg, messages_delete_channel chan Co
 	})
 
 	ws_client.On("/chat/message", func(h *gosocketio.Channel, args Message) {
-		messages_channel <- Core.Msg{Id: args.Id, Text:args.Text, Name:args.From.Name, Channel:args.Channel}
+		messages_channel <- Core.Msg{
+			Id: args.Id,
+			Text: args.Text,
+			Name: args.From.Name,
+			Channel: args.Channel,
+			Source: "peka2tv",
+		}
 	})
 
 	ws_client.On("/chat/message/remove", func(h *gosocketio.Channel, args Message) {
-		messages_delete_channel <- Core.Msg{Id: args.Id}
+		messages_delete_channel <- Core.Msg{Id: args.Id, Source: "peka2tv",}
 	})
 
 	for {

@@ -34,6 +34,8 @@ func main() {
 		ExcludedUsers: strings.Split(propertyFile.GetString("exclude-from-rationg", ""), ","),
 		Peka2TvHost: propertyFile.GetString("peka2tv-host", "chat.funstream.tv"),
 		Peka2TvPort: propertyFile.GetInt("peka2tv-port", 80),
+		GoodGameHost: propertyFile.GetString("goodgame-host", "ws://chat.goodgame.ru:8081/chat/websocket"),
+		GoodGameMaxRequestSize: propertyFile.GetInt("goodgame-request-size", 50),
 		Dev: propertyFile.GetBool("dev", false),
 	}
 
@@ -51,13 +53,13 @@ func main() {
 	}()
 
 	var wg sync.WaitGroup
-	wg.Add(4)
+	wg.Add(5)
 
 	go Core.MessageProcessor(messagesInputChannel, messagesDeleteChannel, db, config)
 	go Core.ImageChecker(db)
 	go Core.Web(db, config)
 
-	go Chats.InitChats(messagesInputChannel, messagesDeleteChannel, config)
+	Chats.InitChats(messagesInputChannel, messagesDeleteChannel, db, config)
 
 	wg.Wait()
 

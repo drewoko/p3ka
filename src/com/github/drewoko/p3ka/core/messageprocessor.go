@@ -33,7 +33,7 @@ func MessageProcessor(messagesInputChannel chan Msg, messagesDeleteChannel chan 
 
 func deleteMessage(message Msg, db *DataBase) {
 
-	msg := db.GetMessageById(message.Id)
+	msg := db.GetMessageById(message.Id, message.Source)
 	db.SetDeleted((msg["id"]));
 }
 
@@ -59,7 +59,7 @@ func processMessage(message Msg, db *DataBase, config *Config)  {
 							if contentLength, ok := resp.Header["Content-Length"]; ok {
 								if(len(errs) == 0 && isFileAllowed(contentType[0], contentLength[0])) {
 
-									db.AddRow(message.Id, message.Name, link, isMature(message.Text));
+									db.AddRow(message.Id, message.Name, link, isMature(message.Text), message.Source);
 								}
 							}
 						}

@@ -8,7 +8,7 @@ import (
 	_ "gopkg.in/mattn/go-sqlite3.v1"
 )
 
-const MESSAGE_MAIN_QUERY string = "SELECT id, name, origurl as url, mature FROM messages";
+const MESSAGE_MAIN_QUERY string = "SELECT id, name, origurl as url, mature, source FROM messages";
 
 type RowMap map[string]interface{}
 
@@ -33,6 +33,8 @@ func (self *DataBase) Init(path string) *DataBase {
 func (self *DataBase) createTable() {
 	self.db.Exec("CREATE TABLE messages (id integer not null primary key, date int, messageid int, name text, origurl text, deleted int DEFAULT 0)")
 	self.db.Exec("ALTER TABLE messages ADD COLUMN mature int DEFAULT 0;")
+	self.db.Exec("ALTER TABLE messages ADD COLUMN source text DEFAULT 'peka2tv';")
+	self.db.Exec("CREATE TABLE ggChannels (id integer not null primary key, channel text not null)")
 }
 
 func (self *DataBase) IsExists(author string, url string) bool {
@@ -42,19 +44,58 @@ func (self *DataBase) IsExists(author string, url string) bool {
 	return cnt > 0
 }
 
-func (self *DataBase) AddRow(messageid int64, author string, url string, mature bool) {
+func (self *DataBase) AddRow(messageid int64, author string, url string, mature bool, source string) {
 
 	_, err := self.db.Exec(
-		"INSERT INTO messages (messageid, date, name, origurl, mature) VALUES (?, ?, ?, ?, ?)",
-			int(messageid), int(time.Now().Unix()), author, url, mature)
+		"INSERT INTO messages (messageid, date, name, origurl, mature, source) VALUES (?, ?, ?, ?, ?, ?)",
+			int(messageid), int(time.Now().Unix()), author, url, mature, source)
 
 	if(err != nil) {
 		self.processError(err)
 	}
 }
 
-func (self *DataBase) GetMessageById(id int64) RowMap {
-	s := self.db.QueryRow(MESSAGE_MAIN_QUERY + " where deleted = 0 and id=?", int(id));
+func (self *DataBase) AddRowGGChannel(channel string) {
+
+	s := self.db.QueryRow("SELECT count(id) as cnt FROM ggChannels WHERE channel = ?", channel);
+	var cnt int
+	s.Scan(&cnt)
+
+	if cnt == 0 {
+		_, err := self.db.Exec(
+			"INSERT INTO ggChannels (channel) VALUES (?)", channel)
+
+		if(err != nil) {
+			self.processError(err)
+		}
+	}
+}
+
+func (self *DataBase) GetGGChannels() []string {
+	s, err := self.db.Query("SELECT channel FROM ggChannels")
+
+	if(err != nil) {
+		self.processError(err)
+	}
+	defer s.Close()
+	var channels []string
+	for s.Next() {
+		var channel string
+		err = s.Scan(&channel)
+
+		if err != nil {
+			log.Println("Failed to parse channel")
+			continue
+		}
+
+		channels = append(channels, channel)
+	}
+
+	return channels
+}
+
+func (self *DataBase) GetMessageById(id int64, source string) RowMap {
+	s := self.db.QueryRow(MESSAGE_MAIN_QUERY + " where deleted = 0 and id=? and source=?", int(id), source);
 	return self.SingleMessageScan(s)
 }
 
@@ -162,13 +203,15 @@ func (self *DataBase) MultipleItemMessageScan(s *sql.Rows) RowMap {
 	var name string
 	var url string
 	var mature int
+	var source string
 
-	s.Scan(&id, &name, &url, &mature)
+	s.Scan(&id, &name, &url, &mature, &source)
 
 	row["id"] = id
 	row["name"] = name
 	row["url"] = url
 	row["mature"] = mature
+	row["source"] = source
 
 	return row
 }
@@ -180,13 +223,15 @@ func (self *DataBase) SingleMessageScan(s *sql.Row) RowMap {
 	var name string
 	var url string
 	var mature int
+	var source string
 
-	s.Scan(&id, &name, &url, &mature)
+	s.Scan(&id, &name, &url, &mature, &source)
 
 	row["id"] = id
 	row["name"] = name
 	row["url"] = url
 	row["mature"] = mature
+	row["source"] = source
 
 	return row
 }

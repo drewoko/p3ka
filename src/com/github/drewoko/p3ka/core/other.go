@@ -15,7 +15,8 @@ type Msg struct {
 	Id int64
 	Name string
 	Text string
-	Channel string
+	Channel interface{}
+	Source string
 }
 
 type Config struct {
@@ -26,5 +27,7 @@ type Config struct {
 	ExcludedUsers []string
 	Peka2TvHost string
 	Peka2TvPort int
+	GoodGameHost string
+	GoodGameMaxRequestSize int
 	Dev bool
 }
