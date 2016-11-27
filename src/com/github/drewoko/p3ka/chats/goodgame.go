@@ -3,12 +3,25 @@ package chats
 import (
 	"log"
 	"time"
+	"sync"
 	"encoding/json"
 
 	Core "../core"
 
 	"github.com/gorilla/websocket"
 )
+
+type GoodGameSocketStorage struct {
+	sync.Mutex
+	wsClient *websocket.Conn
+}
+
+func (s *GoodGameSocketStorage) writeMessage(request []byte) error{
+	s.Lock();
+	defer s.Unlock()
+
+	return s.wsClient.WriteMessage(websocket.TextMessage, request)
+}
 
 func initGoodGame(messages_channel chan Core.Msg, messages_delete_channel chan Core.Msg, db *Core.DataBase, config *Core.Config) {
 
@@ -21,6 +34,10 @@ func initGoodGame(messages_channel chan Core.Msg, messages_delete_channel chan C
 		time.Sleep(time.Second * 5)
 		initGoodGame(messages_channel, messages_delete_channel, db, config);
 		return
+	}
+
+	socket := &GoodGameSocketStorage{
+		wsClient: wsClient,
 	}
 
 	plainMessageChan := make(chan []byte)
@@ -67,10 +84,10 @@ func initGoodGame(messages_channel chan Core.Msg, messages_delete_channel chan C
 
 			if message.Type == "welcome" {
 				log.Println("Connected to GoodGame.ru")
-				joinToSavedChannels(wsClient, db);
-				go requestChannels(wsClient, 0, config.GoodGameMaxRequestSize)
+				joinToSavedChannels(socket, db);
+				go requestChannels(socket, 0, config.GoodGameMaxRequestSize)
 			} else if message.Type == "channels_list" {
-				go processChannels(&counter, wsClient, config, message, channelChan)
+				go processChannels(&counter, socket, config, message, channelChan)
 			} else if message.Type == "remove_message" {
 				messages_delete_channel <- Core.Msg{Id: int64(message.Data["message_id"].(float64)), Source: "goodgame",}
 			} else if message.Type == "message" {
@@ -85,59 +102,59 @@ func initGoodGame(messages_channel chan Core.Msg, messages_delete_channel chan C
 		case channel := <-channelChan:
 			db.AddRowGGChannel(channel)
 		case <- channelRefresh.C:
-			go requestChannels(wsClient, 0, config.GoodGameMaxRequestSize)
+			go requestChannels(socket, 0, config.GoodGameMaxRequestSize)
 		case <- pingTicker.C:
-			sendPing(wsClient)
+			sendPing(socket)
 		case <- quitChat:
 			return
 		}
 	}
 }
 
-func processChannels(counter *int, wsClient *websocket.Conn, config *Core.Config, message GoodGameStruct, channelChan chan string) {
+func processChannels(counter *int, socket *GoodGameSocketStorage, config *Core.Config, message GoodGameStruct, channelChan chan string) {
 	var channelInterface interface{}
 	intCounter := 0;
 	for _, channelInterface = range message.Data["channels"].([]interface{}) {
 		channel := channelInterface.(map[string]interface{})["channel_id"].(string)
 		channelChan <- channel
-		joinToChannel(wsClient, channel)
+		joinToChannel(socket, channel)
 		intCounter++;
 	}
 	*counter = *counter + intCounter
 
 	if intCounter == config.GoodGameMaxRequestSize {
-		go requestChannels(wsClient, intCounter-1, config.GoodGameMaxRequestSize)
+		go requestChannels(socket, intCounter-1, config.GoodGameMaxRequestSize)
 	}
 }
 
-func joinToSavedChannels(wsClient *websocket.Conn, db *Core.DataBase) {
+func joinToSavedChannels(socket *GoodGameSocketStorage, db *Core.DataBase) {
 	for _, channel := range db.GetGGChannels() {
-		joinToChannel(wsClient, channel)
+		joinToChannel(socket, channel)
 	}
 }
 
-func sendPing(wsClient *websocket.Conn) {
-	sentMessage(wsClient, GoodGameStruct{
+func sendPing(socket *GoodGameSocketStorage) {
+	sentMessage(socket, GoodGameStruct{
 		Type: "ping",
 		Data: map[string]interface{}{},
 	})
 }
 
-func joinToChannel(wsClient *websocket.Conn, channel interface{}) {
-	sentMessage(wsClient, GoodGameStruct{
+func joinToChannel(socket *GoodGameSocketStorage, channel interface{}) {
+	sentMessage(socket, GoodGameStruct{
 		Type: "join",
 		Data: map[string]interface{}{"channel_id": channel, "hidden": false},
 	})
 }
 
-func requestChannels(wsClient *websocket.Conn, start int, count int) {
-	sentMessage(wsClient, GoodGameStruct{
+func requestChannels(socket *GoodGameSocketStorage, start int, count int) {
+	sentMessage(socket, GoodGameStruct{
 		Type: "get_channels_list",
 		Data: map[string]interface{}{"start": start, "count": count},
 	})
 }
 
-func sentMessage(wsClient *websocket.Conn, messageStruct GoodGameStruct) {
+func sentMessage(socket *GoodGameSocketStorage, messageStruct GoodGameStruct) {
 
 	request, err := json.Marshal(messageStruct)
 
@@ -145,7 +162,8 @@ func sentMessage(wsClient *websocket.Conn, messageStruct GoodGameStruct) {
 		log.Println("Failed to create JSON", err)
 		return
 	}
-	err = wsClient.WriteMessage(websocket.TextMessage, request)
+
+	err = socket.writeMessage(request)
 
 	if err != nil {
 		log.Println(err)
