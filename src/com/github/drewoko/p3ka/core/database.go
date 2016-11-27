@@ -130,7 +130,7 @@ func (self *DataBase) GetLast(limit int, start int) []RowMap {
 	return self.MultipleMessageScan(s)
 }
 
-func (self *DataBase) get_last_user(limit int, start int, user string) []RowMap {
+func (self *DataBase) getLastUser(limit int, start int, user string) []RowMap {
 
 	s, err := self.db.Query(
 		MESSAGE_MAIN_QUERY + " where deleted=0 and name=? order by id desc limit ?,?", user, start, limit)
@@ -142,7 +142,7 @@ func (self *DataBase) get_last_user(limit int, start int, user string) []RowMap 
 	return self.MultipleMessageScan(s)
 }
 
-func (self *DataBase) get_random(limit int) []RowMap {
+func (self *DataBase) getRandom(limit int) []RowMap {
 
 	s, err := self.db.Query(
 		MESSAGE_MAIN_QUERY + " WHERE deleted = 0 ORDER BY RANDOM() LIMIT ?", limit)
@@ -154,7 +154,7 @@ func (self *DataBase) get_random(limit int) []RowMap {
 	return self.MultipleMessageScan(s)
 }
 
-func (self *DataBase) get_top_users(limit int, exclude []string) []RowMap {
+func (self *DataBase) getTopUsers(limit int, exclude []string) []RowMap {
 
 	var rows []RowMap
 

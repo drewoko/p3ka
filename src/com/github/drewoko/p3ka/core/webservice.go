@@ -29,11 +29,11 @@ func Web(db *DataBase, config *Config) {
 	api := ginInst.Group("/api")
 	{
 		api.GET("/random", func(c *gin.Context) {
-			c.JSON(200, db.get_random(39))
+			c.JSON(200, db.getRandom(39))
 		})
 
 		api.GET("/top", func(c *gin.Context) {
-			c.JSON(200, db.get_top_users(200, config.ExcludedUsers))
+			c.JSON(200, db.getTopUsers(200, config.ExcludedUsers))
 		})
 
 		api.GET("/last", func(c *gin.Context) {
@@ -59,7 +59,7 @@ func Web(db *DataBase, config *Config) {
 			if(err != nil) {
 				c.JSON(400, gin.H{})
 			} else {
-				c.JSON(200, db.get_last_user(37, i, user))
+				c.JSON(200, db.getLastUser(37, i, user))
 			}
 		})
 	}

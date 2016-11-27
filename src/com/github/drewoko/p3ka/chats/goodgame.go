@@ -22,7 +22,6 @@ func initGoodGame(messages_channel chan Core.Msg, messages_delete_channel chan C
 		initGoodGame(messages_channel, messages_delete_channel, db, config);
 		return
 	}
-	log.Println("Connected to GoodGame.ru")
 
 	plainMessageChan := make(chan []byte)
 	channelChan := make(chan string)
