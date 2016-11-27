@@ -3,4 +3,3 @@
 application.properties
 *.db
 out/
-bindata.go
