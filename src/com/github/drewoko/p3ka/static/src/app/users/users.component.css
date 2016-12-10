@@ -1,0 +1,19 @@
+table#top_chart {
+    width: 100%;
+}
+
+table#top_chart > tbody > tr:nth-child(odd) {
+    background-color: #ededed;
+}
+
+tr.crown > td > img {
+    height: 24px;
+    position: relative;
+    top: 5px;
+}
+
+tr.crown {
+    height: 3em;
+    line-height: 3em;
+    font-weight: bold;
+}

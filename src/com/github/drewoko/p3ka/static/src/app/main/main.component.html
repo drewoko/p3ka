@@ -1,0 +1,10 @@
+<div class="images"
+     infinite-scroll
+     [infiniteScrollDistance]="0.5"
+     [infiniteScrollThrottle]="0"
+     (scrolled)="scrollEvent()">
+
+    <images [(images)]="images" big="true"></images>
+
+    <div style='clear: both;'></div>
+</div>

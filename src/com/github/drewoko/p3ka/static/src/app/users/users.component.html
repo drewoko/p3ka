@@ -1,0 +1,19 @@
+<table id="top_chart">
+    <thead>
+    <tr>
+        <td>#</td>
+        <td>Username</td>
+        <td>Score</td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let user of users; let i = index;" [ngClass]="{'crown': i == 0}">
+        <td>{{i+1}}</td>
+        <td>
+            <img src="/img/crown.png" *ngIf="i==0">
+            <a [routerLink]="['/user', user.name]">{{user.name}}</a>
+        </td>
+        <td>{{user.cnt}}</td>
+    </tr>
+    </tbody>
+</table>

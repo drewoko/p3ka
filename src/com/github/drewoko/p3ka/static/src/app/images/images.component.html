@@ -1,0 +1,13 @@
+<div>
+    <article *ngFor="let image of images; let i = index;"
+             [ngClass]="{'big': (big && i%8==0), 'adult-content': (image.mature == 1)}"
+             [hidden]="image.mature == 1">
+
+        <img src="{{image.url}}" alt="{{image.name}}" (click)="openImage(image)"/>
+        <cite>{{image.name}}</cite>
+    </article>
+
+    <div class="lightbox" [ngClass]="{'open': selectedImage != null}" (click)="imageEvent($event)">
+        <img src="{{selectedImage !=  null ? selectedImage.url : ''}}"/>
+    </div>
+</div>
