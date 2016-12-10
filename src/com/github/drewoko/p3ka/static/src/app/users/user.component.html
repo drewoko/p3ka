@@ -1,7 +1,7 @@
 <div class="images"
      infinite-scroll
      [infiniteScrollDistance]="0.5"
-     [infiniteScrollThrottle]="0"
+     [infiniteScrollThrottle]="1000"
      (scrolled)="scrollEvent()">
 
     <images [(images)]="images"></images>

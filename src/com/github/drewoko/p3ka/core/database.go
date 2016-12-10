@@ -44,11 +44,11 @@ func (self *DataBase) IsExists(author string, url string) bool {
 	return cnt > 0
 }
 
-func (self *DataBase) AddRow(messageid int64, author string, url string, mature bool, source string) {
+func (self *DataBase) AddRow(messageid int64, author string, url string, mature bool, source string, deleted bool) {
 
 	_, err := self.db.Exec(
-		"INSERT INTO messages (messageid, date, name, origurl, mature, source) VALUES (?, ?, ?, ?, ?, ?)",
-			int(messageid), int(time.Now().Unix()), author, url, mature, source)
+		"INSERT INTO messages (messageid, date, name, origurl, mature, source, deleted) VALUES (?, ?, ?, ?, ?, ?, ?)",
+			int(messageid), int(time.Now().Unix()), author, url, mature, source, deleted)
 
 	if(err != nil) {
 		self.processError(err)
@@ -108,6 +108,11 @@ func (self *DataBase) SetDeleted(id interface{}) {
 	self.db.Exec("UPDATE messages set deleted = 1 where id=?", id)
 }
 
+func (self *DataBase) SetDeletedByUser(user interface{}) {
+	self.db.Exec("UPDATE messages set deleted = 1 where name=?", user)
+}
+
+
 func (self *DataBase) GetAll() []RowMap {
 	s, err := self.db.Query(MESSAGE_MAIN_QUERY + " where deleted=0");
 
@@ -130,7 +135,7 @@ func (self *DataBase) GetLast(limit int, start int) []RowMap {
 	return self.MultipleMessageScan(s)
 }
 
-func (self *DataBase) getLastUser(limit int, start int, user string) []RowMap {
+func (self *DataBase) GetLastUser(limit int, start int, user string) []RowMap {
 
 	s, err := self.db.Query(
 		MESSAGE_MAIN_QUERY + " where deleted=0 and name=? order by id desc limit ?,?", user, start, limit)

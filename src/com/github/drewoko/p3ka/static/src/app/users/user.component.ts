@@ -18,12 +18,12 @@ export class UserComponent extends ImagePageComponent {
 
     user: string;
 
-    constructor(imageService: ImageService, private route: ActivatedRoute) {
-        super(imageService);
+    constructor(imageService: ImageService, route: ActivatedRoute) {
+        super(imageService, route);
     }
 
     protected init() {
-        this.route.params.subscribe(params => {
+        this.getRoute().params.subscribe(params => {
             this.user = params['user'];
 
             this.scrollEvent();

@@ -16,7 +16,7 @@ import {Observable} from "rxjs";
 export class RandomImagesComponent extends ImagePageComponent {
 
     constructor(imageService: ImageService) {
-        super(imageService);
+        super(imageService, null);
     }
 
     protected init() {

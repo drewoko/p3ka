@@ -11,6 +11,7 @@ import {UsersComponent} from "./users/users.component";
 import {UserComponent} from "./users/user.component";
 import {RandomImagesComponent} from "./random/random.component";
 import {AboutComponent} from "./about/about.component";
+import {Angulartics2Module, Angulartics2GoogleAnalytics} from 'angulartics2';
 
 const appRoutes: Routes = [
     {path: '', component: MainComponent},
@@ -36,8 +37,9 @@ const appRoutes: Routes = [
         FormsModule,
         HttpModule,
         InfiniteScrollModule,
-        RouterModule.forRoot(appRoutes, {useHash: true})
+        RouterModule.forRoot(appRoutes, {useHash: true}),
+
+        Angulartics2Module.forRoot([ Angulartics2GoogleAnalytics ])
     ]
 })
-export class AppModule {
-}
+export class AppModule {}

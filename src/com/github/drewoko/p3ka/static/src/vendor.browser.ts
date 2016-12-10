@@ -14,3 +14,4 @@ import "rxjs/add/operator/mergeMap";
 import "rxjs/Observable";
 import "rxjs/Rx";
 import "angular2-infinite-scroll";
+import "angulartics2";

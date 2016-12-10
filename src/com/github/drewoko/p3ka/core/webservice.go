@@ -29,7 +29,7 @@ func Web(db *DataBase, config *Config) {
 	api := ginInst.Group("/api")
 	{
 		api.GET("/random", func(c *gin.Context) {
-			c.JSON(200, db.getRandom(39))
+			c.JSON(200, db.getRandom(config.HttpResponseLimit))
 		})
 
 		api.GET("/top", func(c *gin.Context) {
@@ -45,7 +45,7 @@ func Web(db *DataBase, config *Config) {
 			if(err != nil) {
 				c.JSON(400, gin.H{})
 			} else {
-				c.JSON(200, db.GetLast(37, i))
+				c.JSON(200, db.GetLast(config.HttpResponseLimit, i))
 			}
 		})
 
@@ -59,7 +59,7 @@ func Web(db *DataBase, config *Config) {
 			if(err != nil) {
 				c.JSON(400, gin.H{})
 			} else {
-				c.JSON(200, db.getLastUser(37, i, user))
+				c.JSON(200, db.GetLastUser(config.HttpResponseLimit, i, user))
 			}
 		})
 	}

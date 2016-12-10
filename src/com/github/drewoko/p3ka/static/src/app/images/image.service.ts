@@ -19,7 +19,7 @@ export class ImageService {
         options.search = params;
 
         return this.http.get("/api/last", options)
-            .map((resp: Response) => resp.json() as Image[])
+            .map(ImageService.handleResponse)
             .catch(ImageService.handleError);
     }
 
@@ -33,7 +33,7 @@ export class ImageService {
         options.search = params;
 
         return this.http.get("/api/user", options)
-            .map((resp: Response) => resp.json() as Image[])
+            .map(ImageService.handleResponse)
             .catch(ImageService.handleError);
     }
 
@@ -41,8 +41,13 @@ export class ImageService {
         let options = new RequestOptions({headers: new Headers({'Content-Type': 'application/json'})});
 
         return this.http.get("/api/random", options)
-            .map((resp: Response) => resp.json() as Image[])
+            .map(ImageService.handleResponse)
             .catch(ImageService.handleError);
+    }
+
+    private static handleResponse(resp: Response): Image[] {
+        let jsonResp = resp.json();
+        return jsonResp == null ? [] : jsonResp as Image[];
     }
 
     private static handleError(error: Response | any) {

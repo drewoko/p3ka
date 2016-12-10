@@ -1,6 +1,7 @@
 {
   "name": "p3ka-web",
   "version": "0.0.1",
+  "author": "Deniss 'drewoko' Gubanov <deniss@gubanov.ee>",
   "scripts": {
     "build:dev": "webpack --config config/webpack.dev.js --progress --profile",
     "build:prod": "webpack --config config/webpack.prod.js  --progress --profile --bail",
@@ -26,7 +27,8 @@
     "rxjs": "5.0.0-beta.12",
     "zone.js": "~0.6.26",
 
-    "angular2-infinite-scroll": "^0.2.8"
+    "angular2-infinite-scroll": "^0.2.8",
+    "angulartics2": "^1.5.2"
   },
   "devDependencies": {
     "@types/hammerjs": "^2.0.33",

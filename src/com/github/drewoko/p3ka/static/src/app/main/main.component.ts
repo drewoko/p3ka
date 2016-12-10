@@ -17,7 +17,7 @@ import {Observable} from "rxjs";
 export class MainComponent extends ImagePageComponent {
 
     constructor(imageService: ImageService) {
-        super(imageService);
+        super(imageService, null);
     }
 
     protected init() {

@@ -30,4 +30,5 @@ type Config struct {
 	GoodGameHost string
 	GoodGameMaxRequestSize int
 	Dev bool
+	HttpResponseLimit int
 }

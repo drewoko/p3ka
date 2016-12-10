@@ -5,6 +5,7 @@ import (
 	"sync"
 	"flag"
 	"strings"
+	"runtime"
 
 	"gopkg.in/magiconair/properties.v1"
 
@@ -18,6 +19,8 @@ import (
  */
 
 func main() {
+
+	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	log.Println("Starting P3KA application")
 
@@ -37,6 +40,7 @@ func main() {
 		GoodGameHost: propertyFile.GetString("goodgame-host", "ws://chat.goodgame.ru:8081/chat/websocket"),
 		GoodGameMaxRequestSize: propertyFile.GetInt("goodgame-request-size", 50),
 		Dev: propertyFile.GetBool("dev", false),
+		HttpResponseLimit: propertyFile.GetInt("http-limit", 51),
 	}
 
 	propertyFile.MustFlag(flag.CommandLine)
@@ -51,6 +55,10 @@ func main() {
 		close(messagesDeleteChannel)
 		db.Close()
 	}()
+
+	for _, bannedUser := range config.BannedUsers {
+		db.SetDeletedByUser(bannedUser);
+	}
 
 	var wg sync.WaitGroup
 	wg.Add(5)

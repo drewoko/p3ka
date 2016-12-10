@@ -1,15 +1,18 @@
 import {Image} from "../images/image";
 import {ImageService} from "../images/image.service";
 import {Observable} from "rxjs";
+import {ActivatedRoute} from "@angular/router";
 
 export abstract class ImagePageComponent {
 
     images: Image[];
     imageService: ImageService;
+    route: ActivatedRoute;
 
-    constructor(imageService: ImageService) {
+    constructor(imageService: ImageService, route: ActivatedRoute) {
         this.images = [];
         this.imageService = imageService;
+        this.route = route;
         this.init();
     }
 
@@ -21,6 +24,10 @@ export abstract class ImagePageComponent {
 
     protected addImages(images: Image[]): void {
         this.images = this.images.concat(images);
+    }
+
+    protected getRoute(): ActivatedRoute {
+        return this.route;
     }
 
     protected scrollEvent() {

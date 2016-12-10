@@ -41,35 +41,35 @@ func processMessage(message Msg, db *DataBase, config *Config)  {
 
 	request := gorequest.New().Timeout(time.Second*4)
 
-	if(!ContainsString(config.BannedUsers, message.Name)) {
+	deleted := ContainsString(config.BannedUsers, message.Name);
 
-		links := xurls.Strict.FindAllString(message.Text, -1)
+	links := xurls.Strict.FindAllString(message.Text, -1)
 
-		if(len(links) != 0) {
-			log.Print("Received message: ", message)
-		}
+	if(len(links) != 0) {
+		log.Print("Received message: ", message)
+	}
 
-		for _, link := range links {
-			if (!strings.Contains(link, "#noP3KA") && !db.IsExists(message.Name, link)) {
-				resp, _, errs :=  request.Head(link).End();
-				if(len(errs) == 0) {
-					if(resp.StatusCode == 200) {
-						log.Print("Processing file: ", link, resp)
-						if contentType, ok := resp.Header["Content-Type"]; ok {
-							if contentLength, ok := resp.Header["Content-Length"]; ok {
-								if(len(errs) == 0 && isFileAllowed(contentType[0], contentLength[0])) {
+	for _, link := range links {
+		if (!strings.Contains(link, "#noP3KA") && !db.IsExists(message.Name, link)) {
+			resp, _, errs :=  request.Head(link).End();
+			if(len(errs) == 0) {
+				if(resp.StatusCode == 200) {
+					log.Print("Processing file: ", link, resp)
+					if contentType, ok := resp.Header["Content-Type"]; ok {
+						if contentLength, ok := resp.Header["Content-Length"]; ok {
+							if(len(errs) == 0 && isFileAllowed(contentType[0], contentLength[0])) {
 
-									db.AddRow(message.Id, message.Name, link, isMature(message.Text), message.Source);
-								}
+								db.AddRow(message.Id, message.Name, link, isMature(message.Text), message.Source, deleted);
 							}
 						}
 					}
-				} else {
-					log.Print("Feiled to process image. Reason: ", errs[0])
 				}
+			} else {
+				log.Print("Feiled to process image. Reason: ", errs[0])
 			}
 		}
 	}
+
 }
 
 func isMature(text string) bool {
