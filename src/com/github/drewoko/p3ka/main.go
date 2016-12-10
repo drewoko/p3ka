@@ -14,7 +14,7 @@ import (
 
 /**
 	Before running
-	go-bindata -o core/bindata.go -pkg core static/*
+	go-bindata -o core/bindata.go -pkg core static/dist/*
  */
 
 func main() {

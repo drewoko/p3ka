@@ -1,6 +1,0 @@
-<div class="images" infinite-scroll="nextPage()" infinite-scroll-distance="2" infinite-scroll-disabled="scrollBusy">
-    <article ng-repeat="(key, image) in images" ng-class="{'big': key%8==0, 'adult-content': (image.mature == 1)}" ng-click="showFull(image, images)" id="mainContent">
-        <img ng-src="{{image.url}}" alt="{{image.name}}" ng-hide="image.mature == 1" />
-        <cite>{{image.name}}</cite>
-    </article>
-</div>

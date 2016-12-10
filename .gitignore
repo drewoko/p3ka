@@ -1,5 +1,9 @@
 *.iml
-.idea/
+.idea
 application.properties
 *.db
-out/
+out
+node_modules
+dist
+.DS_Store
+node_modules/

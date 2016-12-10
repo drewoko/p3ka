@@ -21,7 +21,7 @@ func Web(db *DataBase, config *Config) {
 	if config.Dev {
 		ginInst.Use(static.Serve("/", static.LocalFile(config.Static, true)))
 	} else {
-		ginInst.Use(static.Serve("/", BinaryFileSystem("static")))
+		ginInst.Use(static.Serve("/", BinaryFileSystem("static/dist")))
 	}
 
 	ginInst.NoRoute(redirect)
