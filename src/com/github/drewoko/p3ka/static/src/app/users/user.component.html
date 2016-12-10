@@ -2,9 +2,9 @@
      infinite-scroll
      [infiniteScrollDistance]="0.5"
      [infiniteScrollThrottle]="1000"
-     (scrolled)="scrollEvent()">
+     (scrolled)="load()">
 
-    <images [(images)]="images"></images>
+    <images [(images)]="images" [open]="id"></images>
 
     <div style='clear: both;'></div>
 </div>

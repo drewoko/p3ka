@@ -20,7 +20,7 @@ export class RandomImagesComponent extends ImagePageComponent {
     }
 
     protected init() {
-        super.scrollEvent();
+        super.load();
     }
 
     protected requestImages(): Observable<Image[]> {

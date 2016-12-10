@@ -30,7 +30,7 @@ export abstract class ImagePageComponent {
         return this.route;
     }
 
-    protected scrollEvent() {
+    protected load() {
         this.requestImages()
             .subscribe(images => {
                 this.addImages(images);

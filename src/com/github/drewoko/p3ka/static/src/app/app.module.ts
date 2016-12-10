@@ -17,6 +17,7 @@ const appRoutes: Routes = [
     {path: '', component: MainComponent},
     {path: 'users', component: UsersComponent},
     {path: 'user/:user', component: UserComponent},
+    {path: 'show/:id', component: UserComponent},
     {path: 'random', component: RandomImagesComponent},
     {path: 'about', component: AboutComponent}
 ];

@@ -33,7 +33,7 @@ func MessageProcessor(messagesInputChannel chan Msg, messagesDeleteChannel chan 
 
 func deleteMessage(message Msg, db *DataBase) {
 
-	msg := db.GetMessageById(message.Id, message.Source)
+	msg := db.GetMessageByIdAndSource(message.Id, message.Source)
 	db.SetDeleted((msg["id"]));
 }
 

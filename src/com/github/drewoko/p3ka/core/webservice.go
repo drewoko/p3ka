@@ -33,7 +33,7 @@ func Web(db *DataBase, config *Config) {
 		})
 
 		api.GET("/top", func(c *gin.Context) {
-			c.JSON(200, db.getTopUsers(200, config.ExcludedUsers))
+			c.JSON(200, db.getTopUsers(500, config.ExcludedUsers))
 		})
 
 		api.GET("/last", func(c *gin.Context) {
@@ -49,7 +49,9 @@ func Web(db *DataBase, config *Config) {
 			}
 		})
 
-		api.GET("/user", func(c *gin.Context) {
+		userGroup := api.Group("/user");
+
+		userGroup.GET("/", func(c *gin.Context) {
 
 			start := c.Query("start")
 			user := c.Query("user")
@@ -61,6 +63,26 @@ func Web(db *DataBase, config *Config) {
 			} else {
 				c.JSON(200, db.GetLastUser(config.HttpResponseLimit, i, user))
 			}
+		});
+
+		userGroup.GET("/id", func(c *gin.Context) {
+
+			start := c.Query("start")
+			id := c.Query("id")
+
+			startInt, err := strconv.Atoi(start)
+			if(err != nil) {
+				c.JSON(400, gin.H{})
+				return
+			}
+
+			idInt, err := strconv.Atoi(id)
+			if(err != nil) {
+				c.JSON(400, gin.H{})
+				return
+			}
+
+			c.JSON(200, db.GetLastUserById(config.HttpResponseLimit, startInt, idInt))
 		})
 	}
 

@@ -23,6 +23,20 @@ export class ImageService {
             .catch(ImageService.handleError);
     }
 
+    getByUserImageId(start: number, id: number): Observable<Image[]> {
+
+        let params: URLSearchParams = new URLSearchParams();
+        params.set("start", start.toString());
+        params.set("id", id.toString());
+
+        let options = new RequestOptions({headers: new Headers({'Content-Type': 'application/json'})});
+        options.search = params;
+
+        return this.http.get("/api/user/id", options)
+            .map(ImageService.handleResponse)
+            .catch(ImageService.handleError);
+    }
+
     getByUser(start: number, user: string): Observable<Image[]> {
 
         let params: URLSearchParams = new URLSearchParams();

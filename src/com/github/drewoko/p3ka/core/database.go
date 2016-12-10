@@ -94,7 +94,12 @@ func (self *DataBase) GetGGChannels() []string {
 	return channels
 }
 
-func (self *DataBase) GetMessageById(id int64, source string) RowMap {
+func (self *DataBase) GetMessageById(id int64) RowMap {
+	s := self.db.QueryRow(MESSAGE_MAIN_QUERY + " where deleted = 0 and id=?", int(id));
+	return self.SingleMessageScan(s)
+}
+
+func (self *DataBase) GetMessageByIdAndSource(id int64, source string) RowMap {
 	s := self.db.QueryRow(MESSAGE_MAIN_QUERY + " where deleted = 0 and id=? and source=?", int(id), source);
 	return self.SingleMessageScan(s)
 }
@@ -133,6 +138,26 @@ func (self *DataBase) GetLast(limit int, start int) []RowMap {
 	}
 
 	return self.MultipleMessageScan(s)
+}
+
+func (self *DataBase) GetLastUserById(limit int, start int, id int) []RowMap {
+
+	firstImage := self.GetMessageById(int64(id));
+
+	resp := append([]RowMap{}, firstImage)
+
+	s, err := self.db.Query(
+		MESSAGE_MAIN_QUERY + " where deleted=0 and name=? and id!=? order by id desc limit ?,?", firstImage["name"], id, start, limit)
+
+	if(err != nil) {
+		self.processError(err)
+	}
+
+	for _, row := range self.MultipleMessageScan(s) {
+		resp = append(resp, row)
+	}
+
+	return resp
 }
 
 func (self *DataBase) GetLastUser(limit int, start int, user string) []RowMap {

@@ -1,10 +1,10 @@
-import {Component} from "@angular/core";
+import {Component, OnInit, OnDestroy} from "@angular/core";
 import {ImagesComponent} from "../images/images.component";
 import {ImageService} from "../images/image.service";
 import {Image} from "../images/image";
 import {ActivatedRoute} from "@angular/router";
 import {ImagePageComponent} from "../other/image.page.component";
-import {Observable} from "rxjs";
+import {Observable, Subscription} from "rxjs";
 
 @Component({
     selector: 'user',
@@ -14,23 +14,45 @@ import {Observable} from "rxjs";
         ImagesComponent
     ]
 })
-export class UserComponent extends ImagePageComponent {
+export class UserComponent extends ImagePageComponent implements OnDestroy {
 
+    id: number;
     user: string;
+
+    routeSubscription: Subscription;
 
     constructor(imageService: ImageService, route: ActivatedRoute) {
         super(imageService, route);
     }
 
     protected init() {
-        this.getRoute().params.subscribe(params => {
+        this.routeSubscription = this.getRoute().params.subscribe(params => {
+            this.images = [];
+
+            this.id = params['id'];
             this.user = params['user'];
 
-            this.scrollEvent();
+            this.load();
         });
     }
 
+    protected addImages(images: Image[]): void {
+
+        if(images.length > 0) {
+            this.user = images[0].name;
+        }
+        this.images = this.images.concat(images);
+    }
+
     protected requestImages(): Observable<Image[]> {
-        return this.getImageService().getByUser(this.images.length, this.user);
+        if(this.id != null && this.user == null) {
+            return this.getImageService().getByUserImageId(this.images.length, this.id);
+        } else {
+            return this.getImageService().getByUser(this.images.length, this.user);
+        }
+    }
+
+    ngOnDestroy(): void {
+        this.routeSubscription.unsubscribe()
     }
 }
