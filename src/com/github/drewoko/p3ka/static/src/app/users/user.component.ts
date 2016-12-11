@@ -1,4 +1,4 @@
-import {Component, OnInit, OnDestroy} from "@angular/core";
+import {Component, OnDestroy} from "@angular/core";
 import {ImagesComponent} from "../images/images.component";
 import {ImageService} from "../images/image.service";
 import {Image} from "../images/image";
@@ -37,8 +37,10 @@ export class UserComponent extends ImagePageComponent implements OnDestroy {
     }
 
     protected addImages(images: Image[]): void {
-
         if(images.length > 0) {
+            if(this.id != null && this.user == null) {
+                this.imageService.forceOpenImage.next(images[0]);
+            }
             this.user = images[0].name;
         }
         this.images = this.images.concat(images);

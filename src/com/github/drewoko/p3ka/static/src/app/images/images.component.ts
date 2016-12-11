@@ -1,14 +1,15 @@
-import {Component, Input, OnChanges} from "@angular/core";
+import {Component, Input, OnChanges, Output, EventEmitter, OnInit} from "@angular/core";
 import {Image} from "./image";
 import {Location} from "@angular/common";
 import {Router} from "@angular/router";
+import {ImageService} from "./image.service";
 
 @Component({
     selector: 'images',
     templateUrl: './images.component.html',
     styleUrls: ['./images.component.css']
 })
-export class ImagesComponent implements OnChanges {
+export class ImagesComponent implements OnInit {
 
     @Input('images')
     images: Image[] = [];
@@ -16,21 +17,18 @@ export class ImagesComponent implements OnChanges {
     @Input('big')
     big: boolean;
 
-    @Input('open')
-    open: number;
+    @Output()
+    onNewImageLoadRequested = new EventEmitter();
 
     selectedImage: Image = null;
 
-    constructor(private location: Location, private router: Router) {}
+    constructor(private location: Location, private router: Router, private imageService: ImageService) {
+    }
 
-    ngOnChanges(changes) {
-        if(this.open != null && this.images.length > 0) {
-            this.findImage(this.open, this.images)
-                .then(image => this.openImage(image))
-                .catch(err => {
-                    this.open = null;
-                });
-        }
+    ngOnInit() {
+        this.imageService.forceOpenImageAnnounced$.subscribe(image => {
+            this.openImage(image);
+        });
     }
 
     openImage(selectedImage: Image): void {
@@ -39,31 +37,25 @@ export class ImagesComponent implements OnChanges {
         if(selectedImage != null) {
             this.location.go("/show/" + selectedImage.id);
         } else {
-            if(this.open != null) {
+            if(this.router.url.includes("/show")) {
                 this.location.go("/user/" + this.images[0].name);
-                this.open = null;
             } else {
-                if(this.router.url.includes("/show")) {
-                    this.location.go("/user/" + this.images[0].name);
-                } else {
-                    this.location.go(this.router.url);
-                }
+                this.location.go(this.router.url);
             }
         }
     }
 
     imageEvent(event: MouseEvent): void {
-        this.openImage(
-            event.toElement.nodeName == "IMG" ? this.images[this.images.indexOf(this.selectedImage) + 1] : null)
-    }
+        if(event.toElement.nodeName == "IMG") {
+            let foundNextImage: Image = this.images[this.images.indexOf(this.selectedImage) + 1];
 
-    private findImage(id: number, images: Image[]): Promise<Image> {
-        return new Promise<Image>((resolve, reject) => {
-            images.forEach(image => {
-              if(image.id == id) {
-                  resolve(image);
-              }
-            });
-        });
+            if(foundNextImage == null) {
+                this.imageService.imageLoadRequest.next();
+            } else {
+                this.openImage(foundNextImage);
+            }
+        } else {
+            this.openImage(null);
+        }
     }
 }

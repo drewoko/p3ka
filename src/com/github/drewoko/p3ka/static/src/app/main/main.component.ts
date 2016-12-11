@@ -4,7 +4,6 @@ import {ImagesComponent} from "../images/images.component";
 import {Image} from "../images/image";
 import {ImagePageComponent} from "../other/image.page.component";
 import {Observable} from "rxjs";
-import {ActivatedRoute} from "@angular/router";
 
 @Component({
     selector: 'home',

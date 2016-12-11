@@ -69,5 +69,10 @@ article.big {
 
 .lightbox img {
     max-height: 80%;
-    margin-top: 2%;
+    position: absolute;
+    margin: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
 }

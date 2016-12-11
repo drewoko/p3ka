@@ -14,6 +14,10 @@ export abstract class ImagePageComponent {
         this.imageService = imageService;
         this.route = route;
         this.init();
+
+        this.imageService.imageLoadRequestAnnounced$.subscribe(() => {
+            this.load(true)
+        });
     }
 
     protected getImageService(): ImageService {
@@ -30,9 +34,12 @@ export abstract class ImagePageComponent {
         return this.route;
     }
 
-    protected load() {
+    protected load(openNewImage?: boolean) {
         this.requestImages()
             .subscribe(images => {
+                if(openNewImage) {
+                    this.imageService.openImage(images[0]);
+                }
                 this.addImages(images);
             })
     }

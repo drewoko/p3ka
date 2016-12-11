@@ -2,13 +2,19 @@ import {Injectable} from "@angular/core";
 import {Http, Response, URLSearchParams, RequestOptions, Headers} from "@angular/http";
 import {Image} from "./image";
 import {Observable} from "rxjs/Observable";
+import {Subject} from 'rxjs/Subject';
 import "rxjs/Rx";
 
 @Injectable()
 export class ImageService {
 
-    constructor(private http: Http) {
-    }
+    forceOpenImage = new Subject<Image>();
+    forceOpenImageAnnounced$ = this.forceOpenImage.asObservable();
+
+    imageLoadRequest = new Subject();
+    imageLoadRequestAnnounced$ = this.imageLoadRequest.asObservable();
+
+    constructor(private http: Http) {}
 
     getLast(start: number): Observable<Image[]> {
 
@@ -57,6 +63,10 @@ export class ImageService {
         return this.http.get("/api/random", options)
             .map(ImageService.handleResponse)
             .catch(ImageService.handleError);
+    }
+
+    openImage(image: Image) {
+        this.forceOpenImage.next(image);
     }
 
     private static handleResponse(resp: Response): Image[] {
