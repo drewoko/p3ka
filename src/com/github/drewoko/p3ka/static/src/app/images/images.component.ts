@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, Output, EventEmitter, OnInit} from "@angular/core";
+import {Component, Input, OnInit} from "@angular/core";
 import {Image} from "./image";
 import {Location} from "@angular/common";
 import {Router} from "@angular/router";
@@ -7,7 +7,10 @@ import {ImageService} from "./image.service";
 @Component({
     selector: 'images',
     templateUrl: './images.component.html',
-    styleUrls: ['./images.component.css']
+    styleUrls: ['./images.component.css'],
+    host: {
+        '(document:keydown)': 'handleKeyboardEvent($event)'
+    }
 })
 export class ImagesComponent implements OnInit {
 
@@ -16,9 +19,6 @@ export class ImagesComponent implements OnInit {
 
     @Input('big')
     big: boolean;
-
-    @Output()
-    onNewImageLoadRequested = new EventEmitter();
 
     selectedImage: Image = null;
 
@@ -47,15 +47,38 @@ export class ImagesComponent implements OnInit {
 
     imageEvent(event: MouseEvent): void {
         if(event.toElement.nodeName == "IMG") {
-            let foundNextImage: Image = this.images[this.images.indexOf(this.selectedImage) + 1];
-
-            if(foundNextImage == null) {
-                this.imageService.imageLoadRequest.next();
-            } else {
-                this.openImage(foundNextImage);
-            }
+            this.nextImage();
         } else {
-            this.openImage(null);
+            this.closeImage();
+        }
+    }
+
+    handleKeyboardEvent(event: KeyboardEvent) {
+        console.log(event.key);
+        if(event.key == "ArrowRight") {
+            this.nextImage();
+        } else if (event.key == "ArrowLeft") {
+            this.prevImage();
+        } else if (event.key == "Escape") {
+            this.closeImage();
+        }
+    }
+
+    private closeImage(): void {
+        this.openImage(null);
+    }
+
+    private prevImage(): void {
+        this.openImage(this.images[this.images.indexOf(this.selectedImage) - 1]);
+    }
+
+    private nextImage(): void {
+        let foundNextImage: Image = this.images[this.images.indexOf(this.selectedImage) + 1];
+
+        if(foundNextImage == null) {
+            this.imageService.imageLoadRequest.next();
+        } else {
+            this.openImage(foundNextImage);
         }
     }
 }
