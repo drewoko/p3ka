@@ -1,8 +1,20 @@
-table#top_chart {
+.col {
+    width: 33%;
+    position: relative;
+    float: left;
+}
+
+.col .title {
+    text-align: center;
+    margin: 10px;
+    font-size: 15px;
+}
+
+table.topchart {
     width: 100%;
 }
 
-table#top_chart > tbody > tr:nth-child(odd) {
+table.topchart > tbody > tr:nth-child(odd) {
     background-color: #ededed;
 }
 

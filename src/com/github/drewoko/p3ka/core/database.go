@@ -184,12 +184,43 @@ func (self *DataBase) getRandom(limit int) []RowMap {
 	return self.MultipleMessageScan(s)
 }
 
-func (self *DataBase) getTopUsers(limit int, exclude []string) []RowMap {
+
+func (self *DataBase) getTop(limit int, exclude []string) []RowMap {
 
 	var rows []RowMap
 
 	s, err := self.db.Query(
 		"select count(*) as cnt, name from messages where deleted = 0 group by name order by cnt desc LIMIT ?", limit)
+
+	if(err != nil) {
+		self.processError(err)
+	}
+
+	for s.Next() {
+		row := make(RowMap)
+
+		var cnt int
+		var name string
+
+		s.Scan(&cnt, &name)
+
+		row["cnt"] = cnt
+		row["name"] = name
+
+		if(!ContainsString(exclude, row["name"].(string))) {
+			rows = append(rows, row)
+		}
+	}
+
+	return rows
+}
+
+func (self *DataBase) getTopUsersBySource(limit int, source string, exclude []string) []RowMap {
+
+	var rows []RowMap
+
+	s, err := self.db.Query(
+		"select count(*) as cnt, name from messages where deleted = 0 and source=? group by name order by cnt desc LIMIT ?", source, limit)
 
 	if(err != nil) {
 		self.processError(err)

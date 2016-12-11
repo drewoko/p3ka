@@ -11,14 +11,16 @@ import {User, UserService} from "./user.service";
 })
 export class UsersComponent {
 
-    users : User[];
+    allUsers: User[] = [];
+    peka2TvUsers: User[] = [];
+    goodGameUsers: User[] = [];
 
     constructor(private userService : UserService) {
-        userService.getTop()
-            .subscribe(users => this.putUsers(users))
-    }
-
-    putUsers(users : User[]) {
-        this.users = users;
+        userService.getTop(null)
+            .subscribe(users => this.allUsers = users)
+        userService.getTop('peka2tv')
+            .subscribe(users => this.peka2TvUsers = users)
+        userService.getTop('goodgame')
+            .subscribe(users => this.goodGameUsers = users)
     }
 }

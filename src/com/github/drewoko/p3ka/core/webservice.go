@@ -12,7 +12,7 @@ func Web(db *DataBase, config *Config) {
 
 	defer func() {
 		if r := recover(); r != nil {
-			log.Print("Recovering", r)
+			log.Print("Recovering WEB Instance", r)
 		}
 	}()
 
@@ -33,7 +33,13 @@ func Web(db *DataBase, config *Config) {
 		})
 
 		api.GET("/top", func(c *gin.Context) {
-			c.JSON(200, db.getTopUsers(500, config.ExcludedUsers))
+			source := c.Query("source")
+
+			if(source == "") {
+				c.JSON(200, db.getTop(500, config.ExcludedUsers))
+			} else {
+				c.JSON(200, db.getTopUsersBySource(500, source, config.ExcludedUsers))
+			}
 		})
 
 		api.GET("/last", func(c *gin.Context) {

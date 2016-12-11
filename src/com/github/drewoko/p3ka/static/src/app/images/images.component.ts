@@ -63,6 +63,10 @@ export class ImagesComponent implements OnInit {
         }
     }
 
+    getSource(source: string): string {
+        return source == "peka2tv" ? "peka2.tv" : "goodgame.ru";
+    }
+
     private closeImage(): void {
         this.openImage(null);
     }
