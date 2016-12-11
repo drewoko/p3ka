@@ -144,7 +144,10 @@ func (self *DataBase) GetLastUserById(limit int, start int, id int) []RowMap {
 
 	firstImage := self.GetMessageById(int64(id));
 
-	resp := append([]RowMap{}, firstImage)
+	resp := []RowMap{}
+	if(firstImage["id"] != 0) {
+		resp = append(resp, firstImage)
+	}
 
 	s, err := self.db.Query(
 		MESSAGE_MAIN_QUERY + " where deleted=0 and name=? and id!=? order by id desc limit ?,?", firstImage["name"], id, start, limit)

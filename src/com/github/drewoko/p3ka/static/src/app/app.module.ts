@@ -11,8 +11,8 @@ import {UsersComponent} from "./users/users.component";
 import {UserComponent} from "./users/user.component";
 import {RandomImagesComponent} from "./random/random.component";
 import {AboutComponent} from "./about/about.component";
-import {Angulartics2Module, Angulartics2GoogleAnalytics} from 'angulartics2';
 import {LazyLoadImageModule} from 'ng2-lazyload-image';
+import {ErrorComponent} from "./other/error.component";
 
 const appRoutes: Routes = [
     {path: '', component: MainComponent},
@@ -20,7 +20,8 @@ const appRoutes: Routes = [
     {path: 'user/:user', component: UserComponent},
     {path: 'show/:id', component: UserComponent},
     {path: 'random', component: RandomImagesComponent},
-    {path: 'about', component: AboutComponent}
+    {path: 'about', component: AboutComponent},
+    {path: '**', component: ErrorComponent}
 ];
 
 @NgModule({
@@ -32,7 +33,8 @@ const appRoutes: Routes = [
         UsersComponent,
         UserComponent,
         RandomImagesComponent,
-        AboutComponent
+        AboutComponent,
+        ErrorComponent
     ],
     imports: [
         BrowserModule,
@@ -40,9 +42,7 @@ const appRoutes: Routes = [
         HttpModule,
         InfiniteScrollModule,
         LazyLoadImageModule,
-        RouterModule.forRoot(appRoutes, {useHash: true}),
-
-        Angulartics2Module.forRoot([ Angulartics2GoogleAnalytics ])
+        RouterModule.forRoot(appRoutes, {useHash: true})
     ]
 })
 export class AppModule {}

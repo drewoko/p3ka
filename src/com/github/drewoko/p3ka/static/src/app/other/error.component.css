@@ -1,0 +1,15 @@
+.error-container {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.error-peka {
+    width: 225px;
+    height: 225px;
+    -webkit-animation: spin 1s infinite linear;
+}
+
+@-webkit-keyframes spin {
+    0%  {-webkit-transform: rotate(0deg);}
+    100% {-webkit-transform: rotate(360deg);}
+}

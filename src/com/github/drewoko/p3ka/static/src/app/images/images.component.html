@@ -1,4 +1,4 @@
-<div>
+<div *ngIf="images.length > 0">
     <article *ngFor="let image of images; let i = index;"
              [ngClass]="{'big': (big && i%8==0)}"
              [lazyLoad]="image.mature == 1 ? '/img/restricted.png' : image.url"
@@ -10,4 +10,7 @@
     <div class="lightbox" [ngClass]="{'open': selectedImage != null}" (click)="imageEvent($event)">
         <img [src]="selectedImage !=  null ? selectedImage.url : ''"/>
     </div>
+</div>
+<div *ngIf="images.length == 0">
+    <error></error>
 </div>
