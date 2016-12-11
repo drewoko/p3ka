@@ -1,9 +1,9 @@
 <div>
     <article *ngFor="let image of images; let i = index;"
-             [ngClass]="{'big': (big && i%8==0), 'adult-content': (image.mature == 1)}"
-             [hidden]="image.mature == 1">
-
-        <img [src]="image.url" [alt]="image.name" (click)="openImage(image)"/>
+             [ngClass]="{'big': (big && i%8==0)}"
+             [lazyLoad]="image.mature == 1 ? '/img/restricted.png' : image.url"
+             [offset]="300"
+             (click)="openImage(image)">
         <cite><b>{{getSource(image.source)}}</b> / {{image.name}}</cite>
     </article>
 

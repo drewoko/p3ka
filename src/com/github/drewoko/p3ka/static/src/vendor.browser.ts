@@ -16,3 +16,4 @@ import "rxjs/Subject";
 import "rxjs/Rx";
 import "angular2-infinite-scroll";
 import "angulartics2";
+import "ng2-lazyload-image"

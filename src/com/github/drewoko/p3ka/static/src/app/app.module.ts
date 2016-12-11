@@ -12,6 +12,7 @@ import {UserComponent} from "./users/user.component";
 import {RandomImagesComponent} from "./random/random.component";
 import {AboutComponent} from "./about/about.component";
 import {Angulartics2Module, Angulartics2GoogleAnalytics} from 'angulartics2';
+import {LazyLoadImageModule} from 'ng2-lazyload-image';
 
 const appRoutes: Routes = [
     {path: '', component: MainComponent},
@@ -38,6 +39,7 @@ const appRoutes: Routes = [
         FormsModule,
         HttpModule,
         InfiniteScrollModule,
+        LazyLoadImageModule,
         RouterModule.forRoot(appRoutes, {useHash: true}),
 
         Angulartics2Module.forRoot([ Angulartics2GoogleAnalytics ])

@@ -45,8 +45,8 @@ export class ImagesComponent implements OnInit {
         }
     }
 
-    imageEvent(event: MouseEvent): void {
-        if(event.toElement.nodeName == "IMG") {
+    imageEvent(event: any): void {
+        if(event.target.tagName == "IMG") {
             this.nextImage();
         } else {
             this.closeImage();
