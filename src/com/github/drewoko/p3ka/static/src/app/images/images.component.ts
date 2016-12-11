@@ -54,7 +54,6 @@ export class ImagesComponent implements OnInit {
     }
 
     handleKeyboardEvent(event: KeyboardEvent) {
-        console.log(event.key);
         if(event.key == "ArrowRight") {
             this.nextImage();
         } else if (event.key == "ArrowLeft") {
