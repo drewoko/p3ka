@@ -14,12 +14,16 @@ export class ImageService {
     imageLoadRequest = new Subject();
     imageLoadRequestAnnounced$ = this.imageLoadRequest.asObservable();
 
+    filterObs = new Subject<Filter>();
+    filterObsAnnounced$ = this.filterObs.asObservable();
+
     constructor(private http: Http) {}
 
-    getLast(start: number): Observable<Image[]> {
+    getLast(filter: Filter, start: number): Observable<Image[]> {
 
         let params: URLSearchParams = new URLSearchParams();
         params.set("start", start.toString());
+        params.set("filter", filter.toString());
 
         let options = new RequestOptions({headers: new Headers({'Content-Type': 'application/json'})});
         options.search = params;
@@ -57,8 +61,12 @@ export class ImageService {
             .catch(ImageService.handleError);
     }
 
-    getRandom(): Observable<Image[]> {
+    getRandom(filter: Filter): Observable<Image[]> {
+        let params: URLSearchParams = new URLSearchParams();
+        params.set("filter", filter.toString());
+
         let options = new RequestOptions({headers: new Headers({'Content-Type': 'application/json'})});
+        options.search = params;
 
         return this.http.get("/api/random", options)
             .map(ImageService.handleResponse)
@@ -69,6 +77,10 @@ export class ImageService {
         this.forceOpenImage.next(image);
     }
 
+    setFilter(filter: Filter) {
+        this.filterObs.next(filter);
+    }
+
     private static handleResponse(resp: Response): Image[] {
         let jsonResp = resp.json();
         return jsonResp == null ? [] : jsonResp as Image[];
@@ -77,4 +89,10 @@ export class ImageService {
     private static handleError(error: Response | any) {
         return Observable.throw(error.toString());
     }
+}
+
+export enum Filter {
+    ALL,
+    PEKA2TV,
+    GOODGAME
 }

@@ -1,8 +1,8 @@
 import {Component} from "@angular/core";
-import {ImageService} from "../images/image.service";
+import {ImageService, Filter} from "../images/image.service";
 import {ImagesComponent} from "../images/images.component";
 import {Image} from "../images/image";
-import {ImagePageComponent} from "../other/image.page.component";
+import {ImagePageComponent} from "../other/image/image.page.component";
 import {Observable} from "rxjs";
 
 @Component({
@@ -23,7 +23,7 @@ export class RandomImagesComponent extends ImagePageComponent {
         super.load();
     }
 
-    protected requestImages(): Observable<Image[]> {
-        return super.getImageService().getRandom();
+    protected requestImages(filter: Filter): Observable<Image[]> {
+        return super.getImageService().getRandom(filter);
     }
 }

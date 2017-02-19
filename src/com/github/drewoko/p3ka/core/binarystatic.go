@@ -1,8 +1,8 @@
 package core
 
 import (
-	"strings"
 	"net/http"
+	"strings"
 
 	"github.com/elazarl/go-bindata-assetfs"
 )

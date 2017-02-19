@@ -1,0 +1,24 @@
+.filters {
+    text-align: center;
+    cursor: pointer;
+    height: 40px;
+    font-size: 14px;
+}
+
+.filters > div {
+    width: 400px;
+    height: 30px;
+    position: relative;
+    margin: 0 auto;
+    padding-top: 18px;
+}
+
+.filters > div > .filter {
+    float: right;
+    cursor: pointer;
+    width: 33%;
+}
+
+.filters > div > .filter.active {
+    font-weight: bolder;
+}

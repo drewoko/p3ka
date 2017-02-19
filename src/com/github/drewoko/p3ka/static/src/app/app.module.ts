@@ -13,6 +13,7 @@ import {RandomImagesComponent} from "./random/random.component";
 import {AboutComponent} from "./about/about.component";
 import {LazyLoadImageModule} from 'ng2-lazyload-image';
 import {ErrorComponent} from "./other/error.component";
+import {ImageFilterComponent} from "./other/image/image-filter.component"
 
 const appRoutes: Routes = [
     {path: '', component: MainComponent},
@@ -34,7 +35,8 @@ const appRoutes: Routes = [
         UserComponent,
         RandomImagesComponent,
         AboutComponent,
-        ErrorComponent
+        ErrorComponent,
+        ImageFilterComponent
     ],
     imports: [
         BrowserModule,

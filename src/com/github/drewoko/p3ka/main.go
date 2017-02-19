@@ -1,22 +1,22 @@
 package main
 
 import (
-	"log"
-	"sync"
 	"flag"
-	"strings"
+	"log"
 	"runtime"
+	"strings"
+	"sync"
 
 	"gopkg.in/magiconair/properties.v1"
 
-	Core "./core"
 	Chats "./chats"
+	Core "./core"
 )
 
 /**
-	Before running
-	go-bindata -o core/bindata.go -pkg core static/dist/*
- */
+Before running
+go-bindata -o core/bindata.go -pkg core static/dist/*
+*/
 
 func main() {
 
@@ -29,17 +29,17 @@ func main() {
 
 	propertyFile := properties.MustLoadFile(*configurationFile, properties.UTF8)
 
-	config := &Core.Config {
-		Database: propertyFile.GetString("database", "p3ka.db"),
-		Port: propertyFile.GetString("port", "8080"),
-		Static: propertyFile.GetString("static", "/static"),
-		BannedUsers: strings.Split(propertyFile.GetString("banned-users", ""), ","),
-		ExcludedUsers: strings.Split(propertyFile.GetString("exclude-from-rationg", ""), ","),
-		Peka2TvHost: propertyFile.GetString("peka2tv-host", "chat.funstream.tv"),
-		Peka2TvPort: propertyFile.GetInt("peka2tv-port", 80),
-		GoodGameHost: propertyFile.GetString("goodgame-host", "ws://chat.goodgame.ru:8081/chat/websocket"),
+	config := &Core.Config{
+		Database:               propertyFile.GetString("database", "p3ka.db"),
+		Port:                   propertyFile.GetString("port", "8080"),
+		Static:                 propertyFile.GetString("static", "/static"),
+		BannedUsers:            strings.Split(propertyFile.GetString("banned-users", ""), ","),
+		ExcludedUsers:          strings.Split(propertyFile.GetString("exclude-from-rationg", ""), ","),
+		Peka2TvHost:            propertyFile.GetString("peka2tv-host", "chat.funstream.tv"),
+		Peka2TvPort:            propertyFile.GetInt("peka2tv-port", 80),
+		GoodGameHost:           propertyFile.GetString("goodgame-host", "ws://chat.goodgame.ru:8081/chat/websocket"),
 		GoodGameMaxRequestSize: propertyFile.GetInt("goodgame-request-size", 50),
-		Dev: propertyFile.GetBool("dev", false),
+		Dev:               propertyFile.GetBool("dev", false),
 		HttpResponseLimit: propertyFile.GetInt("http-limit", 51),
 	}
 
@@ -48,7 +48,7 @@ func main() {
 	messagesInputChannel := make(chan Core.Msg)
 	messagesDeleteChannel := make(chan Core.Msg)
 
-	db := new(Core.DataBase).Init(config.Database);
+	db := new(Core.DataBase).Init(config.Database)
 
 	defer func() {
 		close(messagesInputChannel)
@@ -57,7 +57,7 @@ func main() {
 	}()
 
 	for _, bannedUser := range config.BannedUsers {
-		db.SetDeletedByUser(bannedUser);
+		db.SetDeletedByUser(bannedUser)
 	}
 
 	var wg sync.WaitGroup

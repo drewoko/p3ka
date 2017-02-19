@@ -1,10 +1,10 @@
 package chats
 
 import (
-	"log"
-	"time"
-	"sync"
 	"encoding/json"
+	"log"
+	"sync"
+	"time"
 
 	Core "../core"
 
@@ -16,8 +16,8 @@ type GoodGameSocketStorage struct {
 	wsClient *websocket.Conn
 }
 
-func (s *GoodGameSocketStorage) writeMessage(request []byte) error{
-	s.Lock();
+func (s *GoodGameSocketStorage) writeMessage(request []byte) error {
+	s.Lock()
 	defer s.Unlock()
 
 	return s.wsClient.WriteMessage(websocket.TextMessage, request)
@@ -32,7 +32,7 @@ func initGoodGame(messages_channel chan Core.Msg, messages_delete_channel chan C
 	if err != nil {
 		log.Println("Failed to connect to GoodGame.ru", err)
 		time.Sleep(time.Second * 5)
-		initGoodGame(messages_channel, messages_delete_channel, db, config);
+		initGoodGame(messages_channel, messages_delete_channel, db, config)
 		return
 	}
 
@@ -61,7 +61,7 @@ func initGoodGame(messages_channel chan Core.Msg, messages_delete_channel chan C
 				log.Println("Disconnected from GoodGame.ru")
 				quitChat <- true
 				time.Sleep(time.Second * 5)
-				initGoodGame(messages_channel, messages_delete_channel, db, config);
+				initGoodGame(messages_channel, messages_delete_channel, db, config)
 				return
 			}
 
@@ -71,12 +71,12 @@ func initGoodGame(messages_channel chan Core.Msg, messages_delete_channel chan C
 		}
 	}()
 
-	counter := 0;
+	counter := 0
 
 	for {
 		var plainMessage []byte
 		select {
-		case plainMessage = <- plainMessageChan:
+		case plainMessage = <-plainMessageChan:
 
 			message := GoodGameStruct{}
 
@@ -84,28 +84,28 @@ func initGoodGame(messages_channel chan Core.Msg, messages_delete_channel chan C
 
 			if message.Type == "welcome" {
 				log.Println("Connected to GoodGame.ru")
-				joinToSavedChannels(socket, db);
+				joinToSavedChannels(socket, db)
 				go requestChannels(socket, 0, config.GoodGameMaxRequestSize)
 			} else if message.Type == "channels_list" {
 				go processChannels(&counter, socket, config, message, channelChan)
 			} else if message.Type == "remove_message" {
-				messages_delete_channel <- Core.Msg{Id: int64(message.Data["message_id"].(float64)), Source: "goodgame",}
+				messages_delete_channel <- Core.Msg{Id: int64(message.Data["message_id"].(float64)), Source: "goodgame"}
 			} else if message.Type == "message" {
 				messages_channel <- Core.Msg{
-					Id: int64(message.Data["message_id"].(float64)),
-					Text: message.Data["text"].(string),
-					Name: message.Data["user_name"].(string),
+					Id:      int64(message.Data["message_id"].(float64)),
+					Text:    message.Data["text"].(string),
+					Name:    message.Data["user_name"].(string),
 					Channel: message.Data["channel_id"],
-					Source: "goodgame",
+					Source:  "goodgame",
 				}
 			}
 		case channel := <-channelChan:
 			db.AddRowGGChannel(channel)
-		case <- channelRefresh.C:
+		case <-channelRefresh.C:
 			go requestChannels(socket, 0, config.GoodGameMaxRequestSize)
-		case <- pingTicker.C:
+		case <-pingTicker.C:
 			sendPing(socket)
-		case <- quitChat:
+		case <-quitChat:
 			return
 		}
 	}
@@ -113,12 +113,12 @@ func initGoodGame(messages_channel chan Core.Msg, messages_delete_channel chan C
 
 func processChannels(counter *int, socket *GoodGameSocketStorage, config *Core.Config, message GoodGameStruct, channelChan chan string) {
 	var channelInterface interface{}
-	intCounter := 0;
+	intCounter := 0
 	for _, channelInterface = range message.Data["channels"].([]interface{}) {
 		channel := channelInterface.(map[string]interface{})["channel_id"].(string)
 		channelChan <- channel
 		joinToChannel(socket, channel)
-		intCounter++;
+		intCounter++
 	}
 	*counter = *counter + intCounter
 
@@ -171,6 +171,6 @@ func sentMessage(socket *GoodGameSocketStorage, messageStruct GoodGameStruct) {
 }
 
 type GoodGameStruct struct {
-	Type string	`json:"type"`
+	Type string                 `json:"type"`
 	Data map[string]interface{} `json:"data"`
 }

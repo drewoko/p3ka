@@ -2,9 +2,9 @@ package core
 
 import (
 	"log"
-	"time"
 	"strconv"
 	"strings"
+	"time"
 
 	"gopkg.in/mvdan/xurls.v0"
 	"gopkg.in/parnurzeal/gorequest.v0"
@@ -18,15 +18,15 @@ func MessageProcessor(messagesInputChannel chan Msg, messagesDeleteChannel chan 
 		}
 	}()
 
-	for ;; {
+	for {
 		var message Msg
 		var deleted_message Msg
 
 		select {
-			case message = <-messagesInputChannel:
-				go processMessage(message, db, config)
-			case deleted_message = <-messagesDeleteChannel:
-				go deleteMessage(deleted_message, db)
+		case message = <-messagesInputChannel:
+			go processMessage(message, db, config)
+		case deleted_message = <-messagesDeleteChannel:
+			go deleteMessage(deleted_message, db)
 		}
 	}
 }
@@ -34,32 +34,32 @@ func MessageProcessor(messagesInputChannel chan Msg, messagesDeleteChannel chan 
 func deleteMessage(message Msg, db *DataBase) {
 
 	msg := db.GetMessageByIdAndSource(message.Id, message.Source)
-	db.SetDeleted((msg["id"]));
+	db.SetDeleted((msg["id"]))
 }
 
-func processMessage(message Msg, db *DataBase, config *Config)  {
+func processMessage(message Msg, db *DataBase, config *Config) {
 
-	request := gorequest.New().Timeout(time.Second*4)
+	request := gorequest.New().Timeout(time.Second * 4)
 
-	deleted := ContainsString(config.BannedUsers, message.Name);
+	deleted := ContainsString(config.BannedUsers, message.Name)
 
 	links := xurls.Strict.FindAllString(message.Text, -1)
 
-	if(len(links) != 0) {
+	if len(links) != 0 {
 		log.Print("Received message: ", message)
 	}
 
 	for _, link := range links {
-		if (!strings.Contains(link, "#noP3KA") && !db.IsExists(message.Name, link)) {
-			resp, _, errs :=  request.Head(link).End();
-			if(len(errs) == 0) {
-				if(resp.StatusCode == 200) {
+		if !strings.Contains(link, "#noP3KA") && !db.IsExists(message.Name, link) {
+			resp, _, errs := request.Head(link).End()
+			if len(errs) == 0 {
+				if resp.StatusCode == 200 {
 					log.Print("Processing file: ", link, resp)
 					if contentType, ok := resp.Header["Content-Type"]; ok {
 						if contentLength, ok := resp.Header["Content-Length"]; ok {
-							if(len(errs) == 0 && isFileAllowed(contentType[0], contentLength[0])) {
+							if len(errs) == 0 && isFileAllowed(contentType[0], contentLength[0]) {
 
-								db.AddRow(message.Id, message.Name, link, isMature(message.Text), message.Source, deleted);
+								db.AddRow(message.Id, message.Name, link, isMature(message.Text), message.Source, deleted)
 							}
 						}
 					}
@@ -75,14 +75,14 @@ func processMessage(message Msg, db *DataBase, config *Config)  {
 func isMature(text string) bool {
 	//sorry for that
 	text = strings.ToLower(text)
-	return strings.Contains(text, "+18") || strings.Contains(text, "18+") || strings.Contains(text, "+21")  || strings.Contains(text, "21+") || strings.Contains(text, "[spoiler")
+	return strings.Contains(text, "+18") || strings.Contains(text, "18+") || strings.Contains(text, "+21") || strings.Contains(text, "21+") || strings.Contains(text, "[spoiler")
 }
 
 func isFileAllowed(content_type string, content_length string) bool {
 
 	i64, err := strconv.ParseInt(content_length, 10, 64)
 
-	if(err != nil) {
+	if err != nil {
 		return false
 	}
 

@@ -4,8 +4,9 @@ import (
 	"log"
 	"strconv"
 
-	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/contrib/gzip"
 	"github.com/gin-gonic/contrib/static"
+	"github.com/gin-gonic/gin"
 )
 
 func Web(db *DataBase, config *Config) {
@@ -22,6 +23,7 @@ func Web(db *DataBase, config *Config) {
 		ginInst.Use(static.Serve("/", static.LocalFile(config.Static, true)))
 	} else {
 		ginInst.Use(static.Serve("/", BinaryFileSystem("static/dist")))
+		ginInst.Use(gzip.Gzip(gzip.DefaultCompression))
 	}
 
 	ginInst.NoRoute(redirect)
@@ -29,13 +31,22 @@ func Web(db *DataBase, config *Config) {
 	api := ginInst.Group("/api")
 	{
 		api.GET("/random", func(c *gin.Context) {
-			c.JSON(200, db.getRandom(config.HttpResponseLimit))
+
+			filter := c.Query("filter")
+			filterInt, err := strconv.Atoi(filter)
+
+			if err != nil {
+				c.JSON(400, gin.H{})
+				return
+			}
+
+			c.JSON(200, db.getRandom(config.HttpResponseLimit, filterInt))
 		})
 
 		api.GET("/top", func(c *gin.Context) {
 			source := c.Query("source")
 
-			if(source == "") {
+			if source == "" {
 				c.JSON(200, db.getTop(500, config.ExcludedUsers))
 			} else {
 				c.JSON(200, db.getTopUsersBySource(500, source, config.ExcludedUsers))
@@ -45,17 +56,21 @@ func Web(db *DataBase, config *Config) {
 		api.GET("/last", func(c *gin.Context) {
 
 			start := c.Query("start")
+			filter := c.Query("filter")
 
-			i, err := strconv.Atoi(start)
+			startInt, err := strconv.Atoi(start)
+			filterInt, err2 := strconv.Atoi(filter)
 
-			if(err != nil) {
+			if err != nil || err2 != nil {
 				c.JSON(400, gin.H{})
-			} else {
-				c.JSON(200, db.GetLast(config.HttpResponseLimit, i))
+				return
 			}
+
+			c.JSON(200, db.GetLast(config.HttpResponseLimit, startInt, filterInt))
+
 		})
 
-		userGroup := api.Group("/user");
+		userGroup := api.Group("/user")
 
 		userGroup.GET("/", func(c *gin.Context) {
 
@@ -64,12 +79,12 @@ func Web(db *DataBase, config *Config) {
 
 			i, err := strconv.Atoi(start)
 
-			if(err != nil) {
+			if err != nil {
 				c.JSON(400, gin.H{})
 			} else {
 				c.JSON(200, db.GetLastUser(config.HttpResponseLimit, i, user))
 			}
-		});
+		})
 
 		userGroup.GET("/id", func(c *gin.Context) {
 
@@ -77,13 +92,13 @@ func Web(db *DataBase, config *Config) {
 			id := c.Query("id")
 
 			startInt, err := strconv.Atoi(start)
-			if(err != nil) {
+			if err != nil {
 				c.JSON(400, gin.H{})
 				return
 			}
 
 			idInt, err := strconv.Atoi(id)
-			if(err != nil) {
+			if err != nil {
 				c.JSON(400, gin.H{})
 				return
 			}
@@ -92,7 +107,7 @@ func Web(db *DataBase, config *Config) {
 		})
 	}
 
-	ginInst.Run(":"+config.Port)
+	ginInst.Run(":" + config.Port)
 }
 
 func redirect(c *gin.Context) {

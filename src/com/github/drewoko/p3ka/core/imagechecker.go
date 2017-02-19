@@ -18,9 +18,9 @@ func ImageChecker(db *DataBase) {
 	startImageChecker(db)
 }
 
-func startImageChecker(db *DataBase)  {
+func startImageChecker(db *DataBase) {
 
-	for ;; {
+	for {
 		log.Println("Starting image checking")
 
 		checkImages(db)
@@ -33,19 +33,19 @@ func checkImages(db *DataBase) {
 
 	images := db.GetAll()
 
-	request := gorequest.New().Timeout(time.Second*4)
+	request := gorequest.New().Timeout(time.Second * 4)
 
 	total := len(images)
 	log.Printf("Got %d images", total)
 
 	for _, image := range images {
-		if(image["url"] != nil) {
-			resp, _, _ :=  request.Head(image["url"].(string)).End();
-			if(resp != nil && resp.StatusCode != 200) {
+		if image["url"] != nil {
+			resp, _, _ := request.Head(image["url"].(string)).End()
+			if resp != nil && resp.StatusCode != 200 {
 				db.SetDeleted(image["id"])
-			};
+			}
 		} else {
-			db.SetDeleted(image["id"]);
+			db.SetDeleted(image["id"])
 		}
 	}
 	log.Println("Image checking finished")

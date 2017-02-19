@@ -12,23 +12,23 @@ func ContainsString(s []string, e string) bool {
 }
 
 type Msg struct {
-	Id int64
-	Name string
-	Text string
+	Id      int64
+	Name    string
+	Text    string
 	Channel interface{}
-	Source string
+	Source  string
 }
 
 type Config struct {
-	Database string
-	Port string
-	Static string
-	BannedUsers []string
-	ExcludedUsers []string
-	Peka2TvHost string
-	Peka2TvPort int
-	GoodGameHost string
+	Database               string
+	Port                   string
+	Static                 string
+	BannedUsers            []string
+	ExcludedUsers          []string
+	Peka2TvHost            string
+	Peka2TvPort            int
+	GoodGameHost           string
 	GoodGameMaxRequestSize int
-	Dev bool
-	HttpResponseLimit int
+	Dev                    bool
+	HttpResponseLimit      int
 }

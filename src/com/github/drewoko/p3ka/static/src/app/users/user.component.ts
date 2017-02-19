@@ -3,7 +3,7 @@ import {ImagesComponent} from "../images/images.component";
 import {ImageService} from "../images/image.service";
 import {Image} from "../images/image";
 import {ActivatedRoute} from "@angular/router";
-import {ImagePageComponent} from "../other/image.page.component";
+import {ImagePageComponent} from "../other/image/image.page.component";
 import {Observable, Subscription} from "rxjs";
 
 @Component({
